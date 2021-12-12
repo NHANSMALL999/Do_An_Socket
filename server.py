@@ -1,4 +1,5 @@
 import socket
+import threading
 import pyodbc #thêm thư viện để kết nối với sql
 PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
@@ -74,11 +75,11 @@ def HandleClient(conn,address):
         AccountCheck(conn)
     elif msg == "N":
         Signup(conn)
-    
-    msg = conn.recv(1024).decode(FORMAT)
-    print(msg)
-    return msg
-    #conn.close()
+    #msg = conn.recv(1024).decode(FORMAT)
+    #print(msg)
+    #if msg == "x":
+    #print("Connection with ", address, " ended")
+    conn.close()
 
 ###################################### MAIN ##########################################
 conx = pyodbc.connect(
@@ -95,16 +96,18 @@ print("Server is waiting...")
 print()
 
 msg = ""
-while(msg!="end"):
+nClient=0
+while(nClient<2):
     try:
         conn, address = server.accept()
-        msg = HandleClient(conn,address)                    
+        clientThread=threading.Thread(target=HandleClient, args=(conn, address))
+        clientThread.daemon = False
+        clientThread.start()
+        #msg = HandleClient(conn,address)                    
     except:
         print("Client ",address, "is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
-        msg = "end"
-conn.close()
-print("Connection with ", address, " ended")
+        #msg = "end"
+    nClient+=1
+#conn.close()
+input()
 server.close()
-
-
-

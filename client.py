@@ -85,9 +85,9 @@ try:
         print("Wrong input!")
     
     message = ""    
-    while(message != "end"):      
-        message=input("Talk: ")
-        client.send(message.encode(FORMAT))
+    #while(message != "x"):      
+    message=input("press any key to end: ")
+    client.send(message.encode(FORMAT))
 
         
 except: 
