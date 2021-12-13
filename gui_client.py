@@ -75,11 +75,11 @@ def ResultSignup(client):
         print("Confirm password do not match. Enter again!")
 
 ###################
-def click_login(container, client, id, pw):
+def click_login(controller, client, id, pw):
     Signin(client, id, pw)
     check = ResultSignin(client)
     if check==0:
-        container.showFrame(HomePage)
+        controller.showFrame(HomePage)
     elif check==1 || check==2:
         notification(ERROR, "Wrong password or username!!!\nPlease try again.")
     else:
@@ -151,7 +151,7 @@ class StartPage(tk.Frame):
         self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
 
-        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(container, self.entry_user.get(), self.entry_pswd.get())) 
+        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(controller, self.entry_user.get(), self.entry_pswd.get())) 
         button_log.configure(width=10)
         button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
         button_sign.configure(width=10)
