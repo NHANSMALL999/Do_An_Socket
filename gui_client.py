@@ -32,6 +32,7 @@ def Signin(client,id, pw):
     #pw = input("Password: ")
     list.append(pw)
     SendList(client,list)
+    
 #Hàm đăng ký
 def Signup(client):
     list = []
@@ -45,20 +46,20 @@ def Signup(client):
 
 
 #Hàm nhận kết quả đăng nhập
-def ResultSignin(result):
+def ResultSignin():
     result = client.recv(1024).decode(FORMAT)
-    if(result=="ID does not exist."):
-        #return 1
-        print("ID was wrong")
-    elif(result=="Login successfully!"):
-        #return 2
-        print("Successfully!")
+    if(result=="Login successfully!"):
+        return 0
+        #print("ID was wrong")
+    elif(result=="ID does not exist."):
+        return 1
+        #print("Successfully!")
     elif(result=="Wrong password."):
-        #return 3
-        print("Password was wrong! Enter again!")
+        return 2
+        #print("Password was wrong! Enter again!")
     else:
-        #return 4
-        print("Connection was corrupted!")
+        return -1
+        #print("Connection was corrupted!")
         
 #Hàm nhận kết quả đăng ký
 def ResultSignup(client):
@@ -74,7 +75,15 @@ def ResultSignup(client):
         print("Confirm password do not match. Enter again!")
 
 ###################
-
+def click_login(container, client, id, pw):
+    Signin(client, id, pw)
+    check = ResultSignin(client)
+    if check==0:
+        container.showFrame(HomePage)
+    elif check==1 || check==2:
+        notification(ERROR, "Wrong password or username!!!\nPlease try again.")
+    else:
+        notification(ERROR, "Connection was corrupted!!!")
 
 ##################
 def notification(type, message):
@@ -142,7 +151,7 @@ class StartPage(tk.Frame):
         self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
 
-        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(HomePage)) 
+        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(container, self.entry_user.get(), self.entry_pswd.get())) 
         button_log.configure(width=10)
         button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
         button_sign.configure(width=10)
