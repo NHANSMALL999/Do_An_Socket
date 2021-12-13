@@ -32,6 +32,7 @@ def Signin(client,id, pw):
     #pw = input("Password: ")
     list.append(pw)
     SendList(client,list)
+
 #Hàm đăng ký
 def Signup(client):
     list = []
