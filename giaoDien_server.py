@@ -39,7 +39,7 @@ class VndEx_App(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, SignUpPage, HomePage):
+        for F in (StartPage, HomePage):
             frame = F(container, self)
 
             self.frames[F] = frame 
@@ -81,12 +81,12 @@ class StartPage(tk.Frame):
 
         button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(HomePage)) 
         button_log.configure(width=10)
-        button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
+        button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:notification(ERROR, "Wrong password or username!!!\nPlease try again.")) 
         button_sign.configure(width=10)
 
         #########################################################################
         canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
-        canvas.create_text(110,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.create_text(113,150, text="SERVER", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
 
         
         ## PACK
@@ -108,61 +108,6 @@ class StartPage(tk.Frame):
         canvas.place(x=0,y=0)
         frame_1.place(x=320, y=30)
         ####################################################################
-
-
-class SignUpPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(bg="#CED0F2")
-        # ? khong dung pack() o day duoc?
-        #self.pack()
-
-        #FRAME 1 
-        frame_1 = tk.Frame(self, bd=0, relief='flat')
-        frame_1.configure(bg="#CED0F2")
-
-        label_title = tk.Label(frame_1, text="SIGN UP PAGE", font=HEADER_FONT,fg='#164DF2',bg="#CED0F2")
-        label_user = tk.Label(frame_1, text="username",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
-        label_user.config(anchor='center')
-        label_pswd = tk.Label(frame_1, text="password",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
-
-        self.label_blank_1 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_2 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_3 = tk.Label(frame_1,text="",bg="#CED0F2")
-
-        self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-        self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-
-        button_log = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(HomePage)) 
-        button_log.configure(width=10)
-        button_sign = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:notification(ERROR, "Wrong password or username!!!\nPlease try again.")) 
-        button_sign.configure(width=10)
-
-        #########################################################################
-        canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
-        canvas.create_text(110,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
-
-        
-        ## PACK
-        self.label_blank_1.grid(row=1,column=2)
-        label_title.grid(row=1,column=3, columnspan=3)
-
-        label_user.grid(row=2,column=3, sticky='w')
-        self.entry_user.grid(row=3,column=3, sticky='nsew')
-
-        label_pswd.grid(row=4,column=3, sticky='w')
-        self.entry_pswd.grid(row=5,column=3, sticky='nsew')
-
-        self.label_blank_2.grid(row=6,column=3)
-        button_log.grid(row=7,column=3)
-
-        self.label_blank_3.grid(row=8,column=3)
-        button_sign.grid(row=9,column=3)
-
-        canvas.place(x=0,y=0)
-        frame_1.place(x=320, y=30)
-        ####################################################################
-
 
 
 
