@@ -14,11 +14,11 @@ def SendList(client, list):
     client.send(msg.encode(FORMAT))
 
 #Hàm đăng nhập
-def Signin(client):
+def Signin(client,id, pw):
     list = []
-    id = input("ID: ")
+    #id = input("ID: ")
     list.append(id)
-    pw = input("Password: ")
+    #pw = input("Password: ")
     list.append(pw)
     SendList(client,list)
 #Hàm đăng ký
