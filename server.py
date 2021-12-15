@@ -5,38 +5,53 @@ PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
 FORMAT="utf_16"
 
-#Hàm nhận danh sách từ client
-def RecieveList(conn):
-    list = [] #["nhan", "123456"]
-    data = ""
-    data = str(conn.recv(1024)).decode(FORMAT)
-    while(data!="end"):
+LOGIN="logIn"
+SIGNUP="signUp"
+    
+
+#Ham xu ly Login hoặc Signup
+def choice(conn):
+    choice=conn.recv(1024).decode(FORMAT)
+    conn.send(choice.encode(FORMAT))
+    if(choice==LOGIN):
+        #Nhan ten va password
+        username=conn.recv(1024).decode(FORMAT)
+        conn.send(username.encode(FORMAT))
+        passw=conn.recv(1024).decode(FORMAT)
+        conn.send(passw.encode(FORMAT))
+        #Kiem tra thong tin va gui phan hoi cho client
+        AccountCheck(conn, username, passw)
+    elif(choice==SIGNUP):
+        #Nhan ten, password va password again
+        username=conn.recv(1024).decode(FORMAT)
+        conn.send(username.encode(FORMAT))
+        passw=conn.recv(1024).decode(FORMAT)
+        conn.send(passw.encode(FORMAT))
+       
+        #Dang ky cho client
+        Signup(conn, username, passw)
         
-        list.append(data)
-        conn.send(data.encode(FORMAT))
-        data= conn.recv(1024).decode(FORMAT)
-    return list
 
 #Hàm kiểm tra id và pw      
-def AccountCheck(conn):
+def AccountCheck(conn, user, pw):
     temp = ""
-    client_account = RecieveList(conn)
-    for row in cursor.execute("select PASSWORD from INFORMATION where ID = ?", client_account[0]):
+    for row in cursor.execute("select PASSWORD from INFORMATION where ID = ?", user):
         #row trả về hàng chứa id. vd: ('nhan','123456')
         password = row[0] 
         temp = "checked"
     #conx.close() 
     if(temp != "checked"):
-        #return 1
         ans = "ID does not exist."
+        conn.send("1".encode(FORMAT))
     else:       
-        if(client_account[1]==password):
-            #return 2
+        if(pw==password):
             ans = "Login successfully!"
+            sign = "0"
+            conn.send("0".encode(FORMAT))
         else:
-            #return 3
             ans = "Wrong password."
-    conn.send(ans.encode(FORMAT))
+            conn.send("2".encode(FORMAT))
+            
     print(ans)
 
 #Hàm thêm id và pw vào database
@@ -46,40 +61,31 @@ def Insert_ID_PW(id,pw):
     conx.commit() 
 
 #Hàm đăng ký
-def Signup(conn):
+def Signup(conn, username, passw):
     temp = ""
-    client_account = RecieveList(conn)
-    for row in cursor.execute("select * from INFORMATION where ID = ?",client_account[0]):
+    for row in cursor.execute("select * from INFORMATION where ID = ?", username):
         temp = "checked"
     if(temp == "checked"):
-        #return 1
         ans = "ID already exists."
+        conn.send("1".encode(FORMAT))
     else:
-        if(client_account[1]==client_account[2]):
-            #return 2
-            ans = "Successfully!"
-            Insert_ID_PW(client_account[0],client_account[1])
-        else:
-            #return 3
-            ans = "Confirm password do not match."
-    conn.send(ans.encode(FORMAT))
-    conn.close()
+        ans = "Sign up successfully!"
+        sign = "0"
+        conn.send("0".encode(FORMAT))
+        Insert_ID_PW(username, passw)
+
+    print(ans)
+
 
 def HandleClient(conn,address):
     print("Connected to ", address)
     print()
-    msg = conn.recv(1024).decode(FORMAT)
-    temp = " "
-    conn.send(temp.encode(FORMAT))
-    if msg == "Y":
-        AccountCheck(conn)
-    elif msg == "N":
-        Signup(conn)
-    #msg = conn.recv(1024).decode(FORMAT)
-    #print(msg)
-    #if msg == "x":
-    #print("Connection with ", address, " ended")
+    while(sign != "0"):
+        choice(conn)
+
+    print("Connection with ", address, " ended")
     conn.close()
+
 
 ###################################### MAIN ##########################################
 conx = pyodbc.connect(
@@ -88,6 +94,7 @@ conx = pyodbc.connect(
     "Database=ACCOUNT;"
     "Trusted_Connection=yes;")
 cursor = conx.cursor()
+
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
 server.bind((SERVER, PORT))
 
@@ -95,19 +102,21 @@ server.listen()
 print("Server is waiting...")
 print()
 
-msg = ""
+
 nClient=0
+sign = ""
 while(nClient<2):
     try:
         conn, address = server.accept()
         clientThread=threading.Thread(target=HandleClient, args=(conn, address))
         clientThread.daemon = False
         clientThread.start()
-        #msg = HandleClient(conn,address)                    
+                                   
     except:
         print("Client ",address, "is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
-        #msg = "end"
+        
     nClient+=1
-#conn.close()
+
 input()
+print("End")
 server.close()
