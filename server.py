@@ -7,9 +7,9 @@ FORMAT="utf_16"
 
 #Hàm nhận danh sách từ client
 def RecieveList(conn):
-    list = []
-    data = None
-    data= conn.recv(1024).decode(FORMAT)
+    list = [] #["nhan", "123456"]
+    data = ""
+    data = str(conn.recv(1024)).decode(FORMAT)
     while(data!="end"):
         
         list.append(data)

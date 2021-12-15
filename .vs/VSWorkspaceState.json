@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\__pycache__"
   ],
-  "SelectedNode": "\\client.py",
+  "SelectedNode": "\\server.py",
   "PreviewInSolutionExplorer": true
 }
