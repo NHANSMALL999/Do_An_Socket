@@ -43,6 +43,9 @@ class VndEx_App(tk.Tk):
         self.title("VndEx - Client")
         self.configure(bg="#CED0F2")
 
+        # Cai dat nut [X]
+        self.protocol("WM_DELETE_WINDOW", self.click_X)
+        
         container = tk.Frame(self)
         container.pack(side="top",fill='both',expand=True)
 
@@ -66,6 +69,14 @@ class VndEx_App(tk.Tk):
         else:
             self.geometry("600x300")
         frame.tkraise()
+        
+    # Ham chuc nang nut [X]
+    def click_X(self):
+        if messagebox.askyesno("Exit", "Do you want to quit the app?"):
+            # Them cac chuc nang khac trong nay
+
+            ###################################
+            self.destroy()
 
 
 class StartPage(tk.Frame):
