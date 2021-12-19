@@ -1,31 +1,56 @@
+import socket
+import threading
+import pyodbc #thêm thư viện để kết nối với sql
+PORT=8000
+SERVER=socket.gethostbyname(socket.gethostname())
+FORMAT="utf_16"
+
+LOGIN="logIn"
+SIGNUP="signUp"
+table = "EXCHANGE_RATE_9_12_21"   
+
+conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+cursor = conx.cursor()
+TenNgoaiTe = "SAUDI RIAL"
+
+prefix = "dbo"
+tablename = "EXCHANE_RATE_9_12_21"
+for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from %table" % table):#where TenNgoaiTe = ?",TenNgoaiTe):
+        #print(row)
+        list = []
+        list.append(row[0])
+        list.append(row[1])
+        list.append(row[2])
+        list.append(row[3])
+        print(list)
+
+
+
+
+t="""
+from bs4 import BeautifulSoup
 import requests
-#Import module này để phân tích tệp xml
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
-from bs4 import BeautifulSoup
-#lấy dữ liệu từ web
-#{"results":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDA5MTA5MzEsImlhdCI6MTYzOTYxNDkzMSwic2NvcGUiOiJleGNoYW5nZV9yYXRlIiwicGVybWlzc2lvbiI6MH0.tRBpbaJ_y9Stl_SGXjxt15PhqVH5LNTRMl4veqWC0qU"}
+#key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEyMjUzMjIsImlhdCI6MTYzOTkyOTMyMiwic2NvcGUiOiJleGNoYW5nZV9yYXRlIiwicGVybWlzc2lvbiI6MH0.GCuaOuLwvMWisYtqiVFu56Oo_xl_Y6bV-jPfiv_wRgE"
 
-response = requests.get("https://portal.vietcombank.com.vn/Personal/TG/Pages/ty-gia.aspx?devicechannel=default")
-#response = requests.get("https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx")
-soup = BeautifulSoup(response.content, "html.parser")
+#url= "https://portal.vietcombank.com.vn/en-Us/Corporate/TG/Pages/exchange-rate.aspx?devicechannel=default"
+#url = 'https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx'
+#url = "https://vapi.vnappmob.com/api/request_api_key?scope=exchange_rate"
+#url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
+response = requests.get(url)
+#soup = BeautifulSoup(response.content,"html.parser")
 
-tree = ET.ElementTree(soup)
-print(tree)
-root = tree.getroot()
-#print(root)
-for child_of_root in root:
-    print(child_of_root.tag)
-#print(tree)
-#root = tree.getroot()
 #for child_of_root in root:
-#    print(child_of_root.tag)
-#make it more beautifull
-
-#Lấy dữ liệu mình cần
-#print("##############################################################################################################")
-#data = soup.find_all('h3', class_='title-news')
-#print(data)
+#    print(root.attrib)
+#    print(root.tag)
+#print(soup)
+print(response.content)
+"""

@@ -23,6 +23,24 @@ ERROR = -1
 WARNING = 0
 INFO = 1
 
+#Hàm nhận danh sách
+def RecieveList(client, list):
+    list = []
+    data = None
+    data= client.recv(1024).decode(FORMAT)
+    while(data!="end"):
+        list.append(data)
+        conn.send(data.encode(FORMAT))
+        data= conn.recv(1024).decode(FORMAT)
+    return list
+#Hàm nhận toàn bộ bảng data từ server
+def GetAllDataFromServer(client,list):
+    RecieveList(client, list)
+
+#Hàm nhận data theo tên từ server
+def GetSpeDataFromServer(client, list):
+    RecieveList(client, list)
+
 
 ##################
 def notification(type, message):

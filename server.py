@@ -7,7 +7,7 @@ FORMAT="utf_16"
 
 LOGIN="logIn"
 SIGNUP="signUp"
-    
+table = "EXCHANGE_RATE_9_12_21"   
 
 #Ham xu ly Login hoặc Signup
 def choice(conn):
@@ -76,13 +76,44 @@ def Signup(conn, username, passw):
 
     print(ans)
 
+#Gửi danh sách sang client
+def SendList(conn, list):
+    for data in list:
+        conn.send(str(data).encode(FORMAT))
+        conn.recv(1024)
+    msg = "end"
+    conn.send(msg.encode(FORMAT))
+#Hàm lấy dữ liệu toàn bộ bảng và gửi clien
+def GetAllData(conn):
+    for row in cursor.execute("select * from ? where ID = ?", table, user):
+        list = []
+        list.append(row[0])
+        list.append(row[1])
+        list.append(row[2])
+        list.append(row[3])
+        list.append(row[4])
+        print(list)
+        SendList(list)
+
+#Hàm lấy dữ liệu theo tên ngoại tệ
+def GetSpeData(conn):
+    for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_9_12_21 where TenNgoaiTe = ?",TenNgoaiTe):
+        #print(row)
+        list = []
+        list.append(row[0])
+        list.append(row[1])
+        list.append(row[2])
+        list.append(row[3])
+        print(list)
+        SendList(list)
+
 
 def HandleClient(conn,address):
     print("Connected to ", address)
     print()
     while(sign != "0"):
         choice(conn)
-
+    GetData(conn)
     print("Connection with ", address, " ended")
     conn.close()
 
