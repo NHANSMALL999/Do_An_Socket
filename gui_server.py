@@ -32,7 +32,10 @@ class VndEx_App(tk.Tk):
         self.resizable(width=False, height=False)
         self.title("VndEx - server")
         self.configure(bg="#CED0F2")
-
+        
+        # Cai dat nut [X]
+        self.protocol("WM_DELETE_WINDOW", self.click_X)
+        
         container = tk.Frame(self)
         container.pack(side="top",fill='both',expand=True)
 
@@ -52,10 +55,18 @@ class VndEx_App(tk.Tk):
     def showFrame(self, container):
         frame = self.frames[container]
         if container==HomePage:
-            self.geometry("700x500")
+            self.geometry("600x400")
         else:
             self.geometry("600x300")
         frame.tkraise()
+    
+    # Ham chuc nang nut [X]
+    def click_X(self):
+        if messagebox.askyesno("Exit", "Do you want to quit the app?"):
+            # Them cac chuc nang khac trong nay
+
+            ###################################
+            self.destroy()
 
 
 class StartPage(tk.Frame):
@@ -75,15 +86,12 @@ class StartPage(tk.Frame):
 
         self.label_blank_1 = tk.Label(frame_1,text="",bg="#CED0F2")
         self.label_blank_2 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_3 = tk.Label(frame_1,text="",bg="#CED0F2")
 
         self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
 
         button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(HomePage)) 
         button_log.configure(width=10)
-        button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:notification(ERROR, "Wrong password or username!!!\nPlease try again.")) 
-        button_sign.configure(width=10)
 
         #########################################################################
         canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
@@ -91,7 +99,7 @@ class StartPage(tk.Frame):
 
         
         ## PACK
-        self.label_blank_1.grid(row=1,column=2)
+        self.label_blank_1.grid(row=0,column=2)
         label_title.grid(row=1,column=3, columnspan=3)
 
         label_user.grid(row=2,column=3, sticky='w')
@@ -103,9 +111,6 @@ class StartPage(tk.Frame):
         self.label_blank_2.grid(row=6,column=3)
         button_log.grid(row=7,column=3)
 
-        self.label_blank_3.grid(row=8,column=3)
-        button_sign.grid(row=9,column=3)
-
         canvas.place(x=0,y=0)
         frame_1.place(x=320, y=30)
         ####################################################################
@@ -115,7 +120,34 @@ class StartPage(tk.Frame):
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="bisque2")
+        self.configure(bg="#6B8DF2")
+        #self.pack()
+
+        button_signout = tk.Button(self,text="SIGN OUT",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(StartPage)) 
+        button_signout.configure(width=10)
+        button_signout.pack(side='bottom', padx=10, pady=5)
+
+        top_frame = tk.LabelFrame(self, text="Client connection", font=BUTTON_FONT,  fg="#EBEBF2", bg="#6B8DF2", bd=0)
+
+        top_frame.pack(fill='both', expand=1, padx=10, pady=10)
+
+        #Create a canvas
+        my_canvas_top = tk.Canvas(top_frame, bg="#CED0F2")
+        my_canvas_top.pack(side="left", fill='both', expand=1)
+
+        #Add a scrollbar to the canvas
+        my_scrollbar = ttk.Scrollbar(top_frame, orient='vertical', command=my_canvas_top.yview)
+        my_scrollbar.pack(side='right', fill='y')
+
+        #Configure the canvas
+        my_canvas_top.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas_top.bind('<Configure>', lambda e: my_canvas_top.configure(scrollregion=my_canvas_top.bbox("all")))
+
+        #Create another frame inside the canvas
+        second_frame = tk.Frame(my_canvas_top)
+
+        #Add that new frame to the window in the canvas
+        my_canvas_top.create_window((0,0), window=second_frame, anchor='nw')
         
         
 

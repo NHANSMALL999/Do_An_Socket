@@ -43,6 +43,9 @@ class VndEx_App(tk.Tk):
         self.title("VndEx - Client")
         self.configure(bg="#CED0F2")
 
+        # Cai dat nut [X]
+        self.protocol("WM_DELETE_WINDOW", self.click_X)
+        
         container = tk.Frame(self)
         container.pack(side="top",fill='both',expand=True)
 
@@ -66,6 +69,14 @@ class VndEx_App(tk.Tk):
         else:
             self.geometry("600x300")
         frame.tkraise()
+        
+    # Ham chuc nang nut [X]
+    def click_X(self):
+        if messagebox.askyesno("Exit", "Do you want to quit the app?"):
+            # Them cac chuc nang khac trong nay
+
+            ###################################
+            self.destroy()
 
 
 class StartPage(tk.Frame):
@@ -91,10 +102,10 @@ class StartPage(tk.Frame):
         self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
 
         
-        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
-        button_log.configure(width=10)
-        button_sign = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
-        button_sign.configure(width=10)
+        button_logIn = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
+        button_logIn.configure(width=10)
+        button_goSignUp = tk.Button(frame_1,text="GO TO SIGN UP",font=("Open Sans", 10, "bold"),bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
+        button_goSignUp.configure(width=15)
 
         #########################################################################
         canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
@@ -112,10 +123,10 @@ class StartPage(tk.Frame):
         self.entry_pswd.grid(row=5,column=3, sticky='nsew')
 
         self.label_blank_2.grid(row=6,column=3)
-        button_log.grid(row=7,column=3)
+        button_logIn.grid(row=7,column=3)
 
         self.label_blank_3.grid(row=8,column=3)
-        button_sign.grid(row=9,column=3)
+        button_goSignUp.grid(row=9,column=3)
 
         canvas.place(x=0,y=0)
         frame_1.place(x=320, y=30)
@@ -148,11 +159,11 @@ class SignUpPage(tk.Frame):
         #id = self.entry_user.get()
         #pw = self.entry_pswd.get()
 
-        button_signup = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
+        button_signUp = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
 
-        button_signup.configure(width=10)
-        button_returnlog = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT,bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(StartPage)) 
-        button_returnlog.configure(width=10)
+        button_signUp.configure(width=10)
+        button_goLogIn = tk.Button(frame_1,text="GO TO LOG IN",font=("Open Sans", 10, "bold"),bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(StartPage)) 
+        button_goLogIn.configure(width=15)
 
         #########################################################################
         canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
@@ -170,10 +181,10 @@ class SignUpPage(tk.Frame):
         self.entry_pswd.grid(row=5,column=3, sticky='nsew')
 
         self.label_blank_2.grid(row=6,column=3)
-        button_signup.grid(row=7,column=3)
+        button_signUp.grid(row=7,column=3)
 
         self.label_blank_3.grid(row=8,column=3)
-        button_returnlog.grid(row=9,column=3)
+        button_goLogIn.grid(row=9,column=3)
 
         canvas.place(x=0,y=0)
         frame_1.place(x=320, y=30)
