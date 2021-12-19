@@ -232,6 +232,10 @@ def click_signup(controller, client, id, pw):
              notification(ERROR, "Connection was corrupted!!!")
     except: 
         notification(ERROR, "Connection was corrupted!!!")
+def click_finish_connection(controller, client):
+    client.send("finish".encode(FORMAT))
+    client.recv(1024)
+    client.close()
 try:
     client.connect((SERVER, PORT))
     app = VndEx_App()
