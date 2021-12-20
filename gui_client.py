@@ -83,7 +83,7 @@ class VndEx_App(tk.Tk):
     def showFrame(self, container):
         frame = self.frames[container]
         if container==HomePage:
-            self.geometry("700x500")
+            self.geometry("800x500")
         else:
             self.geometry("600x300")
         frame.tkraise()
@@ -178,10 +178,10 @@ class SignUpPage(tk.Frame):
         #pw = self.entry_pswd.get()
 
         button_signUp = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
-
         button_signUp.configure(width=10)
+        
         button_goLogIn = tk.Button(frame_1,text="GO TO LOG IN",font=("Open Sans", 10, "bold"),bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(StartPage)) 
-        button_goLogIn.configure(width=15)
+        button_goLogIn.configure(width=14)
 
         #########################################################################
         canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
@@ -212,7 +212,78 @@ class SignUpPage(tk.Frame):
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="bisque2")
+        self.configure(bg="#6B8DF2")
+        
+        buttons_frame = tk.Frame(self, bg="#6B8DF2")
+        buttons_frame.grid(row=0, column=0, sticky='we')    
+
+        btn_signOut = tk.Button(buttons_frame, text='Sign out', font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2")
+        btn_signOut.grid(row=0, column=5, padx=(10), pady=(20))
+
+        btn_search = tk.Button(buttons_frame, text='Search', font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2")
+        btn_search.grid(row=0, column=2, padx=(10), pady=(20))
+
+        # Drop down boxes
+
+        listOption_1 = [
+            "28/12/2021", 
+            "29/12/2021", 
+            "31/12/2021" 
+        ]
+
+        listOption_2 = [
+            "All",
+            "EUR", 
+            "JPY", 
+            "GBP" 
+        ]
+
+
+        clicked_1 = tk.StringVar()
+        clicked_1.set(listOption_1[0])
+        #name_option_1 = tk.Label(buttons_frame, text="Day", font=("Open Sans", 10, "bold"), fg="#EBEBF2", bg="#6B8DF2")
+        #name_option_1.grid(row=0, column=0)
+
+        drop_1 = tk.OptionMenu(buttons_frame, clicked_1, *listOption_1)
+        drop_1.config(font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2", width=15, highlightthickness=0)
+        drop_1.grid(row=0, column=0, padx=(10), pady=(20))
+
+
+        clicked_2 = tk.StringVar()
+        clicked_2.set(listOption_2[0])
+        #name_option_1 = tk.Label(buttons_frame, text="Day", font=("Open Sans", 10, "bold"), fg="#EBEBF2", bg="#6B8DF2")
+        #name_option_1.grid(row=0, column=0)
+
+        drop_2 = tk.OptionMenu(buttons_frame, clicked_2, *listOption_2)
+        drop_2.config(font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2", width=10, highlightthickness=0)
+        drop_2.grid(row=0, column=1, padx=(10), pady=(20))
+
+
+        #######################################################################################################
+        frame_showInfo = tk.Frame(self, bg="#6B8DF2", bd=2)
+        #frame_showInfo.pack(fill='both', expand=1, padx=10, pady=10)
+        frame_showInfo.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+        my_canvas_top = tk.Canvas(frame_showInfo, bg="#CED0F2", width=755, height=390)
+        my_canvas_top.pack(side="left", fill='both', expand=1)
+        #my_canvas_top.grid(row=0, column=0, sticky='nsew')
+
+        #Add a scrollbar to the canvas
+        my_scrollbar = ttk.Scrollbar(frame_showInfo, orient='vertical', command=my_canvas_top.yview)
+        my_scrollbar.pack(side='left', fill='y')
+
+        #Configure the canvas
+        my_canvas_top.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas_top.bind('<Configure>', lambda e: my_canvas_top.configure(scrollregion=my_canvas_top.bbox("all")))
+
+        #Create another frame inside the canvas
+        second_frame = tk.Frame(my_canvas_top)
+
+        #Add that new frame to the window in the canvas
+        my_canvas_top.create_window((0,0), window=second_frame, anchor='nw')
+
+        ########################################################################################################
+
         
 ###################
 def click_login(controller, client, id, pw):
