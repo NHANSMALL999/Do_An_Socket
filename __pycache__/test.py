@@ -1,3 +1,4 @@
+a = """
 import socket
 import threading
 import pyodbc #thêm thư viện để kết nối với sql
@@ -30,11 +31,10 @@ for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXC
         list.append(row[2])
         list.append(row[3])
         print(list)
+"""
 
 
 
-
-t="""
 from bs4 import BeautifulSoup
 import requests
 try:
@@ -47,8 +47,9 @@ except ImportError:
 #url= "https://portal.vietcombank.com.vn/en-Us/Corporate/TG/Pages/exchange-rate.aspx?devicechannel=default"
 #url = 'https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx'
 #url = "https://vapi.vnappmob.com/api/request_api_key?scope=exchange_rate"
-#url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
+url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
 response = requests.get(url)
+print(response.content)
 #soup = BeautifulSoup(response.content,"html.parser")
 
 #for child_of_root in root:
@@ -56,4 +57,33 @@ response = requests.get(url)
 #    print(root.tag)
 #print(soup)
 print(response.content)
+
+
+
+s = """
+#Hàm nhận danh sách
+def RecieveList(client, list):
+    list = []
+    data = None
+    data= client.recv(1024).decode(FORMAT)
+    while(data!="end"):
+        list.append(data)
+        conn.send(data.encode(FORMAT))
+        data= conn.recv(1024).decode(FORMAT)
+    return list
+#Hàm nhận toàn bộ bảng data từ server
+def GetAllDataFromServer(client,list):
+    RecieveList(client, list)
+
+#Hàm nhận data theo tên từ server
+def GetSpeDataFromServer(client, list):
+    RecieveList(client, list)
+    def click_X(self,client):
+        if messagebox.askyesno("Exit", "Do you want to quit the app?"):
+            # Them cac chuc nang khac trong nay
+            client.send("0".encode(FORMAT))
+            client.recv(1024)
+            client.close
+            ###################################
+            self.destroy()
 """
