@@ -62,7 +62,7 @@ class VndEx_App(tk.Tk):
         self.configure(bg="#CED0F2")
 
         # Cai dat nut [X]
-        self.protocol("WM_DELETE_WINDOW", self.click_X)
+        self.protocol("WM_DELETE_WINDOW", self.click_X(client))
         
         container = tk.Frame(self)
         container.pack(side="top",fill='both',expand=True)
@@ -89,10 +89,12 @@ class VndEx_App(tk.Tk):
         frame.tkraise()
         
     # Ham chuc nang nut [X]
-    def click_X(self):
+    def click_X(self,client):
         if messagebox.askyesno("Exit", "Do you want to quit the app?"):
             # Them cac chuc nang khac trong nay
-
+            client.send("0".encode(FORMAT))
+            client.recv(1024)
+            client.close
             ###################################
             self.destroy()
 

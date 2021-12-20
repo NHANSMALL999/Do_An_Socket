@@ -19,7 +19,10 @@ TenNgoaiTe = "SAUDI RIAL"
 
 prefix = "dbo"
 tablename = "EXCHANE_RATE_9_12_21"
-for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from %table" % table):#where TenNgoaiTe = ?",TenNgoaiTe):
+time = "09/12/2021"
+for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND TenNgoaiTe = ?",time, TenNgoaiTe):
+#for row in cursor.execute("select * from ? where ID = ?", tablename, TenNgoaiTe)  :
+#for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from , table, "where TenNgoaiTe = ?",TenNgoaiTe):
         #print(row)
         list = []
         list.append(row[0])

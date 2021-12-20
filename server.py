@@ -12,6 +12,7 @@ table = "EXCHANGE_RATE_9_12_21"
 #Ham xu ly Login hoặc Signup
 def choice(conn):
     choice=conn.recv(1024).decode(FORMAT)
+    sign = choice
     conn.send(choice.encode(FORMAT))
     if(choice==LOGIN):
         #Nhan ten va password
@@ -30,6 +31,8 @@ def choice(conn):
        
         #Dang ky cho client
         Signup(conn, username, passw)
+    else:
+        print("end")
         
 
 #Hàm kiểm tra id và pw      
@@ -83,21 +86,22 @@ def SendList(conn, list):
         conn.recv(1024)
     msg = "end"
     conn.send(msg.encode(FORMAT))
-#Hàm lấy dữ liệu toàn bộ bảng và gửi clien
-def GetAllData(conn):
-    for row in cursor.execute("select * from ? where ID = ?", table, user):
+#Hàm lấy dữ liệu toàn bộ bảng theo ngày và gửi client
+def GetAllData(conn, ThoiGian):
+    for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",ThoiGian):
         list = []
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
+        list.append(row[5])
         print(list)
         SendList(list)
 
-#Hàm lấy dữ liệu theo tên ngoại tệ
-def GetSpeData(conn):
-    for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_9_12_21 where TenNgoaiTe = ?",TenNgoaiTe):
+#Hàm lấy dữ liệu theo tên ngoại tệ và theo ngày
+def GetSpeData(conn, ThoiGian, TenNgoaiTe):
+    for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND TenNgoaiTe = ?",ThoiGian, TenNgoaiTe):
         #print(row)
         list = []
         list.append(row[0])
@@ -113,7 +117,6 @@ def HandleClient(conn,address):
     print()
     while(sign != "0"):
         choice(conn)
-    GetData(conn)
     print("Connection with ", address, " ended")
     conn.close()
 
