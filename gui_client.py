@@ -25,13 +25,11 @@ INFO = 1
 
 #Hàm nhận danh sách
 def RecieveList(client, list):
-    data = ""
-    data= client.recv(1024).decode(FORMAT)
-    while(data!="end"):
+    data=""
+    for i in range(5):
+        data= client.recv(1024).decode(FORMAT)
         list.append(data)
         client.send(data.encode(FORMAT))
-        data= client.recv(1024).decode(FORMAT)
-    client.send(data.encode(FORMAT))
     return list
 
 #Hàm nhận toàn bộ bảng data từ server
@@ -359,7 +357,7 @@ def ClickSearch(client,ngay, ma):
     client.recv(1024)
     client.send(ma.encode(FORMAT))
     list = []
-    RecieveList(client,list)
+    list = RecieveList(client,list)
     print(list)
 
 
