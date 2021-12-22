@@ -1,7 +1,7 @@
-a = """
+c="""
 import socket
 import threading
-import pyodbc #thêm thư viện để kết nối với sql
+mport pyodbc #thêm thư viện để kết nối với sql
 PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
 FORMAT="utf_16"
@@ -15,6 +15,8 @@ conx = pyodbc.connect(
     "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
     "Database=EXCHANGE_RATE;"
     "Trusted_Connection=yes;")
+    
+
 cursor = conx.cursor()
 TenNgoaiTe = "SAUDI RIAL"
 
@@ -35,10 +37,13 @@ for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXC
 
 
 
-from bs4 import BeautifulSoup as bs
-import lxml
-import xmldom
+
+
+
+from bs4 import BeautifulSoup
 import requests
+
+
 #try:
 #    import xml.etree.cElementTree as ET
 #except ImportError:
@@ -52,7 +57,12 @@ import requests
 #url = "https://vapi.vnappmob.com/api/request_api_key?scope=exchange_rate"
 url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
 response = requests.get(url)
-print(response.content)
+response.status_code
+#soup = BeautifulSoup(response.text, features="lxml")
+##soup.title.string
+#for tag in soup.find_all('a'):
+#    print(tag.get("href"))
+#print(response.content)     
 
 #content = []
 

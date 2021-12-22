@@ -24,12 +24,25 @@ WARNING = 0
 INFO = 1
 
 #Hàm nhận danh sách
+a = """
 def RecieveList(client, list):
     data=""
     for i in range(5):
         data= client.recv(1024).decode(FORMAT)
         list.append(data)
         client.send(data.encode(FORMAT))
+    return list
+"""
+
+#Hàm nhận danh sách
+def RecieveList(client, list):
+    list = []
+    data = ""
+    data= client.recv(1024).decode(FORMAT)
+    while(data!="end"):
+        list.append(data)
+        client.send(data.encode(FORMAT))
+        data= client.recv(1024).decode(FORMAT)
     return list
 
 #Hàm nhận toàn bộ bảng data từ server
