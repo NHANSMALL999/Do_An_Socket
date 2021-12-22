@@ -3,11 +3,14 @@ from tkinter import messagebox
 from tkinter import ttk 
 import pyodbc
 
+from tkinter import font 
+from tkinter import scrolledtext 
+import time
 
 HEADER_FONT = ("Open Sans", 16,"bold")
 BUTTON_FONT = ("Open Sans", 12, "bold")
 REGULAR_FONT= ("Open Sans", 12)
-
+ENTRY_FONT= ("Open Sans", 10, "bold")
 
 #option
 ERROR = -1
