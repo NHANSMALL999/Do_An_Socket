@@ -88,9 +88,6 @@ def SendList(conn, list):
     for data in list:
         conn.send(data.encode(FORMAT))
         conn.recv(1024)
-    msg = "end"
-    conn.send(msg.encode(FORMAT))
-    conn.recv(1024)
 
 #Hàm lấy dữ liệu toàn bộ bảng theo ngày và gửi client
 def GetAllData(conn, ThoiGian):
