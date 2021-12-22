@@ -95,7 +95,7 @@ class VndEx_App(tk.Tk):
     def showFrame(self, container):
         frame = self.frames[container]
         if container==HomePage:
-            self.geometry("800x500")
+            self.geometry("1000x500")
         else:
             self.geometry("600x300")
         frame.tkraise()
