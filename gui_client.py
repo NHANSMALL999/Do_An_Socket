@@ -104,12 +104,15 @@ class VndEx_App(tk.Tk):
     def click_X(self):
         if messagebox.askyesno("Exit", "Do you want to quit the app?"):
             # Them cac chuc nang khac trong nay
-            client.send("0".encode(FORMAT))
-            client.recv(1024)
-            client.close
-            ###################################
-            self.destroy()
-
+            try:
+                client.send("0".encode(FORMAT))
+                client.recv(1024)
+                client.close
+                ###################################
+                self.destroy()
+            except:
+                client.close()
+                self.destroy()
 
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -227,6 +230,7 @@ class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg="#FFFFFF")
+        self.contacts = []
         
         # Main frame ----------------------------------------------------------
         frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=980)
@@ -243,7 +247,7 @@ class HomePage(tk.Frame):
         button_logOut.place(x=870, y=15)
 
         # frame options ----------------------------------------------------------
-        button_search = tk.Button(frame_options, text="Search", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:ClickSearch(client,str(clicked_1.get()),str(clicked_2.get())))
+        button_search = tk.Button(frame_options, text="Search", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.ClickSearch(client,str(click_list_day.get()),str(click_list_type.get())))
         button_search.config(height=0, width=12)
         button_search.place(x=520, y=26)
 
@@ -252,9 +256,8 @@ class HomePage(tk.Frame):
         button_clear.place(x=670, y=26)
 
         list_day = [
-            "28/12/2021", 
-            "29/12/2021", 
-            "31/12/2021" 
+            "09/12/2021", 
+            "10/12/2021"
         ]
 
         list_type = [
@@ -303,35 +306,46 @@ class HomePage(tk.Frame):
         dropBox_type.place(x=300, y=27)
 
         # frame show ----------------------------------------------------------
-        treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=19)
-        treeView_show.grid(row=0, column=0, sticky='nsew')
+        self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=19)
+        self.treeView_show.grid(row=0, column=0, sticky='nsew')
 
-        treeView_show.column("# 1", anchor='center', width=200)
-        treeView_show.column("# 2", anchor='center', width=150)
-        treeView_show.column("# 3", anchor='center', width=200)
-        treeView_show.column("# 4", anchor='center', width=200)
-        treeView_show.column("# 5", anchor='center', width=200)
+        self.treeView_show.column("# 1", anchor='center', width=200)
+        self.treeView_show.column("# 2", anchor='center', width=150)
+        self.treeView_show.column("# 3", anchor='center', width=200)
+        self.treeView_show.column("# 4", anchor='center', width=200)
+        self.treeView_show.column("# 5", anchor='center', width=200)
 
-        treeView_show.heading(1, text="Tên ngoại tệ")
-        treeView_show.heading(2, text="Mã ngoại tệ")
-        treeView_show.heading(3, text="Mua tiền mặt")
-        treeView_show.heading(4, text="Mua chuyển khoản")
-        treeView_show.heading(5, text="Bán")
+        self.treeView_show.heading(1, text="Tên ngoại tệ")
+        self.treeView_show.heading(2, text="Mã ngoại tệ")
+        self.treeView_show.heading(3, text="Mua tiền mặt")
+        self.treeView_show.heading(4, text="Mua chuyển khoản")
+        self.treeView_show.heading(5, text="Bán")
 
         # Add Scrollbar
-        scrollbar = ttk.Scrollbar(frame_show, orient=tk.VERTICAL, command=treeView_show.yview)
-        treeView_show.configure(yscroll=scrollbar.set)
+        scrollbar = ttk.Scrollbar(frame_show, orient=tk.VERTICAL, command=self.treeView_show.yview)
+        self.treeView_show.configure(yscroll=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky='ns')
 
         # Create Example data
-        contacts = []
-        for n in range(1, 100):
-            contacts.append((f'Ten {n}', f'Ma {n}', f'1010{n}', f'1000{n}', f'1100{n}'))
+
+        
+        #contacts.append((f'Ten {n}', f'Ma {n}', f'1010{n}', f'1000{n}', f'1100{n}'))
 
         # Add Example data to table
-        for contact in contacts:
-            treeView_show.insert('', tk.END, values=contact)
+        #for contact in self.contacts:
+   
     ###############################################################################
+    def ClickSearch(self,client,ngay, ma):
+        client.send(ngay.encode(FORMAT))
+        client.recv(1024)
+        client.send(ma.encode(FORMAT))
+        list = []
+        list = RecieveList(client,list)
+        print(list)
+        self.contacts = list
+        print(self.contacts)
+        self.treeView_show.insert('', tk.END, values=self.contacts)
+
     def click_clear(self):
         pass
 
@@ -391,13 +405,6 @@ def click_signup(controller, client, id, pw):
     except: 
         notification(ERROR, "Connection was corrupted!!!")
 
-def ClickSearch(client,ngay, ma):
-    client.send(ngay.encode(FORMAT))
-    client.recv(1024)
-    client.send(ma.encode(FORMAT))
-    list = []
-    list = RecieveList(client,list)
-    print(list)
 
 
 def click_finish_connection(controller, client):
