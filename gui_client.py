@@ -212,77 +212,103 @@ class SignUpPage(tk.Frame):
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="#6B8DF2")
+        self.configure(bg="#FFFFFF")
         
-        buttons_frame = tk.Frame(self, bg="#6B8DF2")
-        buttons_frame.grid(row=0, column=0, sticky='we')    
+        # Main frame ----------------------------------------------------------
+        frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=980)
+        frame_top.grid(row=0, column=0, padx=5, pady=5)
+        
+        frame_options = tk.LabelFrame(self, text = "Options", font=("Open Sans", 12, 'bold'), bg="#FFFFFF", fg="#000000", bd=3, height=100, width=970)
+        frame_options.grid(row=1, column=0, padx=15, pady=0, sticky='w')
+        
+        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=500, width=980)
+        frame_show.grid(row=2, column=0, padx=5, pady=5)
 
-        btn_signOut = tk.Button(buttons_frame, text='Sign out', font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2")
-        btn_signOut.grid(row=0, column=5, padx=(10), pady=(20))
+        # frame top ----------------------------------------------------------
+        button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
+        button_logOut.place(x=870, y=15)
 
-        btn_search = tk.Button(buttons_frame, text='Search', font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2")
-        btn_search.grid(row=0, column=2, padx=(10), pady=(20))
+        # frame options ----------------------------------------------------------
+        button_search = tk.Button(frame_options, text="Search", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
+        button_search.config(height=0, width=12)
+        button_search.place(x=520, y=26)
 
-        # Drop down boxes
+        button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
+        button_clear.config(height=0, width=12)
+        button_clear.place(x=670, y=26)
 
-        listOption_1 = [
+        list_day = [
             "28/12/2021", 
             "29/12/2021", 
             "31/12/2021" 
         ]
 
-        listOption_2 = [
+        list_type = [
             "All",
             "EUR", 
             "JPY", 
             "GBP" 
         ]
 
+        click_list_day = tk.StringVar()
+        click_list_day.set(list_day[0])
+        
+        canvas_name_option = tk.Canvas(frame_options, bg="#FFFFFF", height=20, width=340, highlightthickness=0)
+        ##
+        canvas_name_option.create_text(112,10,text="Day",font=("Open Sans", 10, 'bold'),fill="#000000")
+        canvas_name_option.create_text(315,10,text="Type",font=("Open Sans", 10, 'bold'),fill="#000000")
+        ##
+        canvas_name_option.place(x=0, y=6)
 
-        clicked_1 = tk.StringVar()
-        clicked_1.set(listOption_1[0])
-        #name_option_1 = tk.Label(buttons_frame, text="Day", font=("Open Sans", 10, "bold"), fg="#EBEBF2", bg="#6B8DF2")
-        #name_option_1.grid(row=0, column=0)
+        dropBox_day = tk.OptionMenu(frame_options, click_list_day, *list_day)
+        dropBox_day.config(font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", width=15, highlightthickness=0)
+        dropBox_day.place(x=100, y=27)
 
-        drop_1 = tk.OptionMenu(buttons_frame, clicked_1, *listOption_1)
-        drop_1.config(font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2", width=15, highlightthickness=0)
-        drop_1.grid(row=0, column=0, padx=(10), pady=(20))
+        click_list_type = tk.StringVar()
+        click_list_type.set(list_type[0])
 
+        dropBox_type = tk.OptionMenu(frame_options, click_list_type, *list_type)
+        dropBox_type.config(font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", width=10, highlightthickness=0)
+        dropBox_type.place(x=300, y=27)
 
-        clicked_2 = tk.StringVar()
-        clicked_2.set(listOption_2[0])
-        #name_option_1 = tk.Label(buttons_frame, text="Day", font=("Open Sans", 10, "bold"), fg="#EBEBF2", bg="#6B8DF2")
-        #name_option_1.grid(row=0, column=0)
+        # frame show ----------------------------------------------------------
+        treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=19)
+        treeView_show.grid(row=0, column=0, sticky='nsew')
 
-        drop_2 = tk.OptionMenu(buttons_frame, clicked_2, *listOption_2)
-        drop_2.config(font=("Open Sans", 10, 'bold'), fg="#164DF2", bg="#EBEBF2", width=10, highlightthickness=0)
-        drop_2.grid(row=0, column=1, padx=(10), pady=(20))
+        treeView_show.column("# 1", anchor='center', width=200)
+        treeView_show.column("# 2", anchor='center', width=150)
+        treeView_show.column("# 3", anchor='center', width=200)
+        treeView_show.column("# 4", anchor='center', width=200)
+        treeView_show.column("# 5", anchor='center', width=200)
 
+        treeView_show.heading(1, text="Tên ngoại tệ")
+        treeView_show.heading(2, text="Mã ngoại tệ")
+        treeView_show.heading(3, text="Mua tiền mặt")
+        treeView_show.heading(4, text="Mua chuyển khoản")
+        treeView_show.heading(5, text="Bán")
 
-        #######################################################################################################
-        frame_showInfo = tk.Frame(self, bg="#6B8DF2", bd=2)
-        #frame_showInfo.pack(fill='both', expand=1, padx=10, pady=10)
-        frame_showInfo.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+        # Add Scrollbar
+        scrollbar = ttk.Scrollbar(frame_show, orient=tk.VERTICAL, command=treeView_show.yview)
+        treeView_show.configure(yscroll=scrollbar.set)
+        scrollbar.grid(row=0, column=1, sticky='ns')
 
-        my_canvas_top = tk.Canvas(frame_showInfo, bg="#CED0F2", width=755, height=390)
-        my_canvas_top.pack(side="left", fill='both', expand=1)
-        #my_canvas_top.grid(row=0, column=0, sticky='nsew')
+        # Create Example data
+        contacts = []
+        for n in range(1, 100):
+            contacts.append((f'Ten {n}', f'Ma {n}', f'1010{n}', f'1000{n}', f'1100{n}'))
 
-        #Add a scrollbar to the canvas
-        my_scrollbar = ttk.Scrollbar(frame_showInfo, orient='vertical', command=my_canvas_top.yview)
-        my_scrollbar.pack(side='left', fill='y')
+        # Add Example data to table
+        for contact in contacts:
+            treeView_show.insert('', tk.END, values=contact)
+    ###############################################################################
+    def click_clear(self):
+        pass
 
-        #Configure the canvas
-        my_canvas_top.configure(yscrollcommand=my_scrollbar.set)
-        my_canvas_top.bind('<Configure>', lambda e: my_canvas_top.configure(scrollregion=my_canvas_top.bbox("all")))
+    def click_search(self):
+        pass
 
-        #Create another frame inside the canvas
-        second_frame = tk.Frame(my_canvas_top)
-
-        #Add that new frame to the window in the canvas
-        my_canvas_top.create_window((0,0), window=second_frame, anchor='nw')
-
-        ########################################################################################################
+    def click_log_out(self):
+        pass
 
         
 ###################
