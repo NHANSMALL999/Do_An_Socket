@@ -1,7 +1,6 @@
-c="""
 import socket
 import threading
-mport pyodbc #thêm thư viện để kết nối với sql
+import pyodbc #thêm thư viện để kết nối với sql
 PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
 FORMAT="utf_16"
@@ -23,23 +22,23 @@ TenNgoaiTe = "SAUDI RIAL"
 prefix = "dbo"
 tablename = "EXCHANE_RATE_9_12_21"
 time = "09/12/2021"
-for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND TenNgoaiTe = ?",time, TenNgoaiTe):
+#for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND TenNgoaiTe = ?",time, TenNgoaiTe):
 #for row in cursor.execute("select * from ? where ID = ?", tablename, TenNgoaiTe)  :
 #for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from , table, "where TenNgoaiTe = ?",TenNgoaiTe):
-        #print(row)
+for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",time):
         list = []
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])
         list.append(row[3])
-        print(list)
-"""
+        list.append(row[4])
+        list.append(row[5])
+        print(list[0])
 
 
 
 
-
-
+d = """
 from bs4 import BeautifulSoup
 import requests
 
@@ -77,7 +76,7 @@ response.status_code
 #print(soup)
 #print(response.content)
 
-
+"""
 
 s = """
 #Hàm nhận danh sách

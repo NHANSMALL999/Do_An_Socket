@@ -20,7 +20,7 @@ def choice(conn, sign):
         passw=conn.recv(1024).decode(FORMAT)
         conn.send(passw.encode(FORMAT))
         #Kiem tra thong tin va gui phan hoi cho client
-        sign = AccountCheck(conn, username, passw,sign)
+        sign = AccountCheck(conn, username, passw, sign)
         
     elif(choice==SIGNUP):
         #Nhan ten, password va password again
@@ -39,6 +39,12 @@ def choice(conn, sign):
 
 #Hàm kiểm tra id và pw      
 def AccountCheck(conn, user, pw, sign):
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+    cursor = conx.cursor()
     temp = ""
     for row in cursor.execute("select PASSWORD from INFORMATION where ID = ?", user):
         #row trả về hàng chứa id. vd: ('nhan','123456')
@@ -58,16 +64,23 @@ def AccountCheck(conn, user, pw, sign):
             conn.send("2".encode(FORMAT))
             
     print(ans)
+    conx.close()
     return sign
 
 #Hàm thêm id và pw vào database
-def Insert_ID_PW(id,pw):
+def Insert_ID_PW(conx, id,pw):
     cursor = conx.cursor()
     cursor.execute("insert INFORMATION values (?,?)", id, pw)
     conx.commit() 
 
 #Hàm đăng ký
-def Signup(conn, username, passw,sign):
+def Signup(conn, username, passw, sign):
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+    cursor = conx.cursor()
     temp = ""
     for row in cursor.execute("select * from INFORMATION where ID = ?", username):
         temp = "checked"
@@ -78,9 +91,10 @@ def Signup(conn, username, passw,sign):
         ans = "Sign up successfully!"
         sign = "0"
         conn.send("0".encode(FORMAT))
-        Insert_ID_PW(username, passw)
+        Insert_ID_PW(conx, username, passw)
 
     print(ans)
+    conx.close()
     return sign
 
 #Gửi danh sách sang client
@@ -97,7 +111,12 @@ def SendList(conn, list):
     conn.send(msg.encode(FORMAT))
 
 #Hàm lấy dữ liệu toàn bộ bảng theo ngày và gửi client
-def GetAllData(conn, conx, ThoiGian):
+def GetAllData(conn, ThoiGian):
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
     cursor = conx.cursor()
     for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",ThoiGian):
         list = []
@@ -107,11 +126,17 @@ def GetAllData(conn, conx, ThoiGian):
         list.append(row[3])
         list.append(row[4])
         list.append(row[5])
-        #print(list)
+        print(list[0])
         SendList(conn, list)
+    conx.close()
 
 #Hàm lấy dữ liệu theo tên ngoại tệ và theo ngày
-def GetSpeData(conn, conx, ThoiGian, MaNT):
+def GetSpeData(conn, ThoiGian, MaNT):
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
     cursor = conx.cursor()
     for row in cursor.execute("select TenNgoaiTe, MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND MaNT = ?",ThoiGian, MaNT):
         #print(row)
@@ -123,29 +148,23 @@ def GetSpeData(conn, conx, ThoiGian, MaNT):
         list.append(row[4])
         #print(list)
         SendList(conn, list)  
-
+    conx.close()
 
 def request(conn):
     date=conn.recv(1024).decode(FORMAT)
     conn.send(date.encode(FORMAT))
     mnt=conn.recv(1024).decode(FORMAT)
     print(mnt)
-    conx = pyodbc.connect(
-    "Driver={ODBC Driver 17 for SQL Server};"
-    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
-    "Database=EXCHANGE_RATE;"
-    "Trusted_Connection=yes;")
     if(mnt=="All"):
-        GetAllData(conn,conx, date)
+        GetAllData(conn, date)
     else:
-        GetSpeData(conn, conx, date, mnt)
+        GetSpeData(conn, date, mnt)
 
 def HandleClient(conn,address,sign):
     print("Connected to ", address)
     print()
     while(sign != "0"):
         sign = choice(conn,sign)
-    conx.close()
 
     request(conn)
     
@@ -161,17 +180,15 @@ server.bind((SERVER, PORT))
 server.listen()
 print("Server is waiting...")
 print()
-
 sign = ""
+conn, address = server.accept()
+HandleClient(conn,address,sign)
+
 nClient=0
+t = """
 while(nClient<2):
     try:
-        conx = pyodbc.connect(
-        "Driver={ODBC Driver 17 for SQL Server};"
-        "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
-        "Database=ACCOUNT;"
-        "Trusted_Connection=yes;")
-        cursor = conx.cursor()
+       
 
         conn, address = server.accept()
         clientThread=threading.Thread(target=HandleClient, args=(conn, address, sign))
@@ -185,4 +202,6 @@ while(nClient<2):
 
 input()
 print("End")
+"""
+
 server.close()
