@@ -118,8 +118,9 @@ def GetAllData(conn, ThoiGian):
     "Database=EXCHANGE_RATE;"
     "Trusted_Connection=yes;")
     cursor = conx.cursor()
+    list = []
     for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",ThoiGian):
-        list = []
+        
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])

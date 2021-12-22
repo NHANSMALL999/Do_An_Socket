@@ -25,8 +25,9 @@ time = "09/12/2021"
 #for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND TenNgoaiTe = ?",time, TenNgoaiTe):
 #for row in cursor.execute("select * from ? where ID = ?", tablename, TenNgoaiTe)  :
 #for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from , table, "where TenNgoaiTe = ?",TenNgoaiTe):
+list = []
 for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",time):
-        list = []
+        
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])
