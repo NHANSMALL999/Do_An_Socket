@@ -50,12 +50,12 @@ class VndEx_App(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.showFrame(StartPage)
+        self.showFrame(HomePage)
 
     def showFrame(self, container):
         frame = self.frames[container]
         if container==HomePage:
-            self.geometry("600x400")
+            self.geometry("900x550")
         else:
             self.geometry("600x300")
         frame.tkraise()
@@ -119,35 +119,125 @@ class StartPage(tk.Frame):
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(bg="#6B8DF2")
-        #self.pack()
+        tk.Frame.__init__(self, parent) 
+        self.configure(bg="#FFFFFF")
 
-        button_signout = tk.Button(self,text="SIGN OUT",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(StartPage)) 
-        button_signout.configure(width=10)
-        button_signout.pack(side='bottom', padx=10, pady=5)
+        self.run = False
 
-        top_frame = tk.LabelFrame(self, text="Client connection", font=BUTTON_FONT,  fg="#EBEBF2", bg="#6B8DF2", bd=0)
+        # Main frame
+        frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=880)
+        frame_top.grid(row=0, column=0, padx=5, pady=10, sticky='e')
 
-        top_frame.pack(fill='both', expand=1, padx=10, pady=10)
+        frame_options = tk.LabelFrame(self, text = "Options", font=("Open Sans", 12, 'bold'), bg="#FFFFFF", fg="#000000", bd=3, height=100, width=880)
+        frame_options.grid(row=1, column=0, padx=0, pady=5, sticky='e')
 
-        #Create a canvas
-        my_canvas_top = tk.Canvas(top_frame, bg="#CED0F2")
-        my_canvas_top.pack(side="left", fill='both', expand=1)
+        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=880, bd=3)
+        frame_show.grid(row=2, column=0, padx=0, ipady=5, sticky='e')
 
-        #Add a scrollbar to the canvas
-        my_scrollbar = ttk.Scrollbar(top_frame, orient='vertical', command=my_canvas_top.yview)
-        my_scrollbar.pack(side='right', fill='y')
+        
+        # Frame top --------------------------------------
+        button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
+        button_logOut.place(x=770, y=15)
 
-        #Configure the canvas
-        my_canvas_top.configure(yscrollcommand=my_scrollbar.set)
-        my_canvas_top.bind('<Configure>', lambda e: my_canvas_top.configure(scrollregion=my_canvas_top.bbox("all")))
+        # Frame options --------------------------------------
+        button_run = tk.Button(frame_options, text="Run", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_run(controller))
+        button_run.config(height=0, width=12)
+        button_run.place(x=550, y=25)
 
-        #Create another frame inside the canvas
-        second_frame = tk.Frame(my_canvas_top)
+        button_stop = tk.Button(frame_options, text="Stop", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_stop(controller))
+        button_stop.config(height=0, width=12)
+        button_stop.place(x=700, y=25)
 
-        #Add that new frame to the window in the canvas
-        my_canvas_top.create_window((0,0), window=second_frame, anchor='nw')
+        canvas_name_option = tk.Canvas(frame_options, bg="#FFFFFF", height=20, width=340, highlightthickness=0)
+        ##
+        canvas_name_option.create_text(133,12,text="IP address",font=("Arial", 10, 'bold'),fill="#000000")
+        canvas_name_option.create_text(283,12,text="Port",font=("Open Sans", 10, 'bold'),fill="#000000")
+        ##
+        canvas_name_option.place(x=0, y=6)
+
+        self.entry_ip = tk.Entry(frame_options, width=13 ,bg='#F2F2F2', font=REGULAR_FONT, bd=2)
+        self.entry_ip.place(x=100, y=30)
+
+        self.entry_port = tk.Entry(frame_options, width=9,bg='#F2F2F2', font=REGULAR_FONT, bd=2)
+        self.entry_port.place(x=270, y=30)
+
+        # Frame show --------------------------------------
+        self.text_show = scrolledtext.ScrolledText(frame_show, bd=0)
+        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=122, height=21)
+        self.text_show.pack()
+
+        # Default run -------------------------------------
+        self.print_default_IP_Port()
+        self.print_show_server_close()
+        ############################################################################
+    def client_login(self, ip, port, username):
+        self.print_show_client_login(ip, port, username)
+
+    def click_restart(self):
+        pass
+    
+    def click_logout(self):
+        pass
+
+    def click_stop(self, controller):
+        if self.run:
+            self.run = False
+            self.delay(controller, float(0.5))
+            self.clear_text_show()
+            self.print_show_server_close()
+            self.close_server()
+            
+    def click_run(self, controller):
+        if self.run == False:
+            self.run = True
+            self.clear_text_show()
+            self.print_show_server_start()
+
+            self.run_server()
+
+            self.print_show_client_login("127.0.0.1", "53490", "tuan123")
+            self.print_show_client_logout("127.0.0.1", "53490", "tuan123")
+
+    def close_server(self):
+        pass
+
+    def run_server(self):
+        pass
+
+    def log_out(self):
+        pass
+
+    def delay(self, controller, second):
+        controller.after(int(second*1000))
+
+    def clear_text_show(self):
+        self.text_show.configure(state='normal')
+        self.text_show.delete(1.0, tk.END)
+        self.text_show.configure(state='disable')
+
+    def print_show_server_start(self):
+        self.text_show.configure(state='normal')
+        self.text_show.insert('insert', f"[Server][Opened]     IP:{self.entry_ip.get()} - Port:{self.entry_port.get()}\n")
+        self.text_show.configure(state='disable')
+
+    def print_show_server_close(self):
+        self.text_show.configure(state='normal')
+        self.text_show.insert('insert', "[Server][Closed]\n")
+        self.text_show.configure(state='disable')
+
+    def print_show_client_login(self, ip, port, username):
+        self.text_show.configure(state='normal')
+        self.text_show.insert('insert', f"[Client][Logged in]   IP:{ip} - Port:{port} - User:{username}\n")
+        self.text_show.configure(state='disable')
+
+    def print_show_client_logout(self, ip, port, username):
+        self.text_show.configure(state='normal')
+        self.text_show.insert('insert', f"[Client][Logged out] IP:{ip} - Port:{port} - User:{username}\n")
+        self.text_show.configure(state='disable')
+
+    def print_default_IP_Port(self):
+        self.entry_ip.insert(0, "127.0.0.1")
+        self.entry_port.insert(0, "8888")
         
         
 
