@@ -126,8 +126,8 @@ def GetAllData(conn, ThoiGian):
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
-        print(list[0])
-        SendList(conn, list)
+    print(list)
+    SendList(conn, list)
     conx.close()
 
 #Hàm lấy dữ liệu theo tên ngoại tệ và theo ngày

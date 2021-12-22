@@ -341,10 +341,13 @@ class HomePage(tk.Frame):
         client.send(ma.encode(FORMAT))
         list = []
         list = RecieveList(client,list)
-        print(list)
+        #print(list)
         self.contacts = list
         print(self.contacts)
-        self.treeView_show.insert('', tk.END, values=self.contacts)
+        for  data in list:
+            self.treeView_show.insert('', tk.END, values=self.contacts)
+            for i in range(5):
+                pop = list.pop(0)
 
     def click_clear(self):
         pass
