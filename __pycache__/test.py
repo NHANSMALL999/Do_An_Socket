@@ -35,12 +35,15 @@ for row in cursor.execute("select MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXC
 
 
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
+import lxml
+import xmldom
 import requests
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
+#try:
+#    import xml.etree.cElementTree as ET
+#except ImportError:
+#    import xml.etree.ElementTree as ET
+
 
 #key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEyMjUzMjIsImlhdCI6MTYzOTkyOTMyMiwic2NvcGUiOiJleGNoYW5nZV9yYXRlIiwicGVybWlzc2lvbiI6MH0.GCuaOuLwvMWisYtqiVFu56Oo_xl_Y6bV-jPfiv_wRgE"
 
@@ -50,13 +53,19 @@ except ImportError:
 url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
 response = requests.get(url)
 print(response.content)
+
+#content = []
+
+#result = bs_content.find("AUSTRALIAN DOLLAR")
+#print(bs_content)
+#print(result)
 #soup = BeautifulSoup(response.content,"html.parser")
 
 #for child_of_root in root:
 #    print(root.attrib)
 #    print(root.tag)
 #print(soup)
-print(response.content)
+#print(response.content)
 
 
 
