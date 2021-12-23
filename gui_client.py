@@ -43,8 +43,10 @@ def RecieveList(client, list):
         list.append(data)
         client.send(data.encode(FORMAT))
         data= client.recv(1024).decode(FORMAT)
+    #print(list)
     return list
 
+#
 #Hàm nhận toàn bộ bảng data từ server
 def GetAllDataFromServer(client,list):
     RecieveList(client, list)
@@ -306,7 +308,7 @@ class HomePage(tk.Frame):
         dropBox_type.place(x=300, y=27)
 
         # frame show ----------------------------------------------------------
-        self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=19)
+        self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=13)
         self.treeView_show.grid(row=0, column=0, sticky='nsew')
 
         self.treeView_show.column("# 1", anchor='center', width=200)
@@ -336,19 +338,43 @@ class HomePage(tk.Frame):
    
     ###############################################################################
     def ClickSearch(self,client,ngay, ma):
-        client.send(ngay.encode(FORMAT))
-        client.recv(1024)
-        client.send(ma.encode(FORMAT))
-        list = []
-        list = RecieveList(client,list)
-        #print(list)
-        self.contacts = list
-        print(self.contacts)
-        for  data in list:
-            self.treeView_show.insert('', tk.END, values=self.contacts)
-            for i in range(5):
-                pop = list.pop(0)
+        #xóa bảng
+        for selected_item in self.treeView_show.get_children():
+            self.treeView_show.delete(selected_item)
+        try:
+            #Gửi yêu cầu cho server
+            client.send(ngay.encode(FORMAT))
+            client.recv(1024)
+            client.send(ma.encode(FORMAT))
+            list = []
+            list = RecieveList(client,list)
+            list = self.Convert(list)
+            #if (list == []):
 
+            print(list)
+            for data in list:
+                self.treeView_show.insert('', tk.END, values=data)
+        except:
+            notification(ERROR, "Server closed!!!")
+
+        
+    def Convert(self, list):
+        new_list = []
+        temp_list = []
+        i = 0
+        for data in list:
+            if i < 5: 
+                i = i + 1
+                temp_list.append(data)
+            else:
+                new_list.append(temp_list)
+                i = 1
+                temp_list = []
+                temp_list.append(data)
+        new_list.append(temp_list)
+
+               
+        return new_list    
     def click_clear(self):
         pass
 

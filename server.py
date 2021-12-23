@@ -119,13 +119,14 @@ def GetAllData(conn, ThoiGian):
     "Trusted_Connection=yes;")
     cursor = conx.cursor()
     list = []
+    
     for row in cursor.execute("select TenNgoaiTe, MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ?",ThoiGian):
-        
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
+    
     print(list)
     SendList(conn, list)
     conx.close()

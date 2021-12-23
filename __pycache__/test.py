@@ -1,3 +1,4 @@
+e ="""
 import socket
 import threading
 import pyodbc #thêm thư viện để kết nối với sql
@@ -34,15 +35,14 @@ for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ?",
         list.append(row[3])
         list.append(row[4])
 print(list[10])
+"""
 
 
 
-
-d = """
 from bs4 import BeautifulSoup
+#import urllib.request
 import requests
-
-
+import pyodbc
 #try:
 #    import xml.etree.cElementTree as ET
 #except ImportError:
@@ -50,33 +50,105 @@ import requests
 
 
 #key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDEyMjUzMjIsImlhdCI6MTYzOTkyOTMyMiwic2NvcGUiOiJleGNoYW5nZV9yYXRlIiwicGVybWlzc2lvbiI6MH0.GCuaOuLwvMWisYtqiVFu56Oo_xl_Y6bV-jPfiv_wRgE"
-
 #url= "https://portal.vietcombank.com.vn/en-Us/Corporate/TG/Pages/exchange-rate.aspx?devicechannel=default"
 #url = 'https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx'
 #url = "https://vapi.vnappmob.com/api/request_api_key?scope=exchange_rate"
+#response.status_code
+#tree = xml.etree.ElementTree.fromstring(string_xml)
+#xml.etree.ElementTree.dump(tree)
+#req = urllib.request.urlopen(url)
+#xml = BeautifulSoup(req, 'xml')
+#print(xml)
+#list = []
+#for item in xml.find_all('Exrate'):
+#    list.append(item)
+#    print(item)
+
+#print(list)
+
+
+
+#def CrawlDataFromWeb():
 url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
 response = requests.get(url)
-response.status_code
-#soup = BeautifulSoup(response.text, features="lxml")
-##soup.title.string
-#for tag in soup.find_all('a'):
-#    print(tag.get("href"))
+soup = BeautifulSoup(response.text, features="lxml")
+
+list_ThoiGian = []
+list_TenNT = []
+list_MaNT = []
+list_MuaTienMat = []
+list_MuaChuyenKhoan = []
+list_Ban = []
+
+#Crawl thời gian
+tag = soup.find("datetime")
+list_ThoiGian.append(tag.next)
+list_ThoiGian = [w[:10] for w in list_ThoiGian] #Tách string trong list từ ['12/23/2021 1:21:55 PM'] thành ['12/23/2021']
+
+#Crawl tỷ giá tiền tệ
+for tag in soup.find_all("exrate"):
+    list_TenNT.append(tag.get("currencyname"))
+    list_MaNT.append(tag.get("currencycode"))
+    list_MuaTienMat.append(tag.get("buy"))
+    list_MuaChuyenKhoan.append(tag.get("transfer"))
+    list_Ban.append(tag.get("sell"))
+
+conx = pyodbc.connect(
+"Driver={ODBC Driver 17 for SQL Server};"
+"Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+"Database=EXCHANGE_RATE;"
+"Trusted_Connection=yes;")
+cursor = conx.cursor()
+temp = ""
+i = 0
+for data in list_TenNT:
+    cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
+    i = i+1
+    conx.commit() 
+
+#i = 0
+#for data in list_TenNT:
+#    cursor.execute("UPDATE homeaddresses SET TenNgoaiTe=?,,address=?,city=?,state=?,pincode=? where id=?",
+
+#    i = i + 1
+#    conx.commit()
+#conx.close()        
+        
+        
+        
+#print(list_ThoiGian)    
+#print(list_TenNT)   
+#print(list_MaNT)
+#print(list_MuaTienMat)
+#print(list_MuaChuyenKhoan)
+#print(list_Ban)
+        
+        
+        
+        
+        
+        
+        
+        
+    #list.append(tag)
+    #print(list)    
+    #print(tag.get("currencycode"))
+    #print(tag.get("currencyname"))
+    #print(tag.get("buy"))
+    #print(tag.get("transfer"))
+    #print(tag.get("sell"))
 #print(response.content)     
-
 #content = []
-
 #result = bs_content.find("AUSTRALIAN DOLLAR")
-#print(bs_content)
+##print(bs_content)
 #print(result)
-#soup = BeautifulSoup(response.content,"html.parser")
-
+##soup = BeautifulSoup(response.content,"html.parser")
 #for child_of_root in root:
 #    print(root.attrib)
 #    print(root.tag)
 #print(soup)
 #print(response.content)
 
-"""
 
 s = """
 #Hàm nhận danh sách

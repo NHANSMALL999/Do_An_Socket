@@ -11,8 +11,7 @@ SIGNUP="signUp"
 table = "EXCHANGE_RATE_9_12_21"   
 
 #Ham xu ly Login hoặc Signup
-def choice(conn, sign):
-    choice=conn.recv(1024).decode(FORMAT)
+def choose(choice,conn, sign):
     conn.send(choice.encode(FORMAT))
     if(choice==LOGIN):
         #Nhan ten va password
@@ -127,8 +126,8 @@ def GetAllData(conn, ThoiGian):
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
-        print(list[0])
-        SendList(conn, list)
+    print(list)
+    SendList(conn, list)
     conx.close()
 
 #Hàm lấy dữ liệu theo tên ngoại tệ và theo ngày
@@ -151,8 +150,7 @@ def GetSpeData(conn, ThoiGian, MaNT):
         SendList(conn, list)  
     conx.close()
 
-def request(conn):
-    date=conn.recv(1024).decode(FORMAT)
+def request(conn,date):
     conn.send(date.encode(FORMAT))
     mnt=conn.recv(1024).decode(FORMAT)
     print(mnt)
@@ -160,18 +158,18 @@ def request(conn):
         GetAllData(conn, date)
     else:
         GetSpeData(conn, date, mnt)
-
+ab = """
 def HandleClient(conn,address,sign):
-    print("Connected to ", address)
+    #print("Connected to ", address)
     print()
     while(sign != "0"):
         sign = choice(conn,sign)
-
-    request(conn)
+    while(True):
+        request(conn)
     
     print("Connection with ", address, " ended")
-    conn.close()
-
+    #conn.close()
+"""
 ################# HÀM GUI #######################
 import tkinter as tk
 from tkinter import messagebox
@@ -303,13 +301,13 @@ class HomePage(tk.Frame):
 
         # Main frame
         frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=880)
-        frame_top.grid(row=0, column=0, padx=5, pady=10, sticky='e')
+        frame_top.grid(row=0, column=0, padx=5, pady=10, sticky='w')
 
         frame_options = tk.LabelFrame(self, text = "Options", font=("Open Sans", 12, 'bold'), bg="#FFFFFF", fg="#000000", bd=3, height=100, width=880)
-        frame_options.grid(row=1, column=0, padx=0, pady=5, sticky='e')
+        frame_options.grid(row=1, column=0, padx=0, pady=5, sticky='w')
 
-        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=880, bd=3)
-        frame_show.grid(row=2, column=0, padx=0, ipady=5, sticky='e')
+        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=800, bd=3)
+        frame_show.grid(row=2, column=0, padx=0, ipady=5, sticky='w')
 
         
         # Frame top --------------------------------------
@@ -342,7 +340,6 @@ class HomePage(tk.Frame):
         self.text_show = scrolledtext.ScrolledText(frame_show, bd=0)
         self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=122, height=21)
         self.text_show.pack()
-
         # Default run -------------------------------------
         self.print_default_IP_Port()
         self.print_show_server_close()
@@ -356,13 +353,14 @@ class HomePage(tk.Frame):
     def click_logout(self):
         pass
 
-    def click_stop(self, controller):
+    def click_stop(self, controller): 
         if self.run:
             self.run = False
             self.delay(controller, float(0.5))
             self.clear_text_show()
             self.print_show_server_close()
-            self.close_server()
+            
+            #self.close_server()
             
     def click_run(self, controller):
         if self.run == False:
@@ -375,13 +373,63 @@ class HomePage(tk.Frame):
             server.listen()
             print("Server is waiting...")
             print()
-            sign = ""
-            conn, address = server.accept()
-            print("client is connected")
-            #self.print_show_client_login("Client is connected")
-            self.print_show_client_logout(address[0], address[1], "tuan123")
 
-    def close_server(self):
+            try:
+                ServerThread=threading.Thread(target=self.HandleServer, args=())
+                ServerThread.daemon = True
+                ServerThread.start()
+            except:
+                print("Client is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
+
+                        
+            #input()
+            #print("client is connected")
+            #self.print_show_client_login("Client is connected")
+            #self.print_show_client_logout(address[0], address[1], "tuan123")
+
+    def HandleClient(self,conn,address,sign):
+        #print("Connected to ", address)
+        choice=conn.recv(1024).decode(FORMAT)
+        print()
+        while(sign != "0"):
+            if(self.run == False):
+                print("Connect iss closed")
+                conn.close()
+                return
+            sign = choose(choice, conn,sign)
+
+        
+        while(True):
+            date=conn.recv(1024).decode(FORMAT)                        
+            if(self.run == False):
+                print("Connect iss closed")
+
+                conn.close()
+                return
+            request(conn,date)
+            
+    
+        print("Connection with ", address, " ended")
+        #conn.close()
+
+    def HandleServer(self):
+        nClient = 0
+        sign = ""
+        while(True):
+            try:
+                conn, address = server.accept()
+                print("Connected to ", address)
+                clientThread=threading.Thread(target=self.HandleClient, args=(conn, address, sign))
+                clientThread.daemon = True
+                clientThread.start()
+                                   
+            except:
+                print("Client ",address, "is disconnectedddddddddd.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
+            
+
+
+    def close_server(self,conn):
+        
         pass
 
     def run_server(self):
@@ -394,6 +442,7 @@ class HomePage(tk.Frame):
 
 
     def log_out(self):
+        
         pass
 
     def delay(self, controller, second):
@@ -434,6 +483,8 @@ class HomePage(tk.Frame):
 ############################################# HÀM MAIN ##################################################
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
 
+
+
 #nClient=0
 t = """
 while(nClient<2):
@@ -458,4 +509,4 @@ print("End")
 app = VndEx_App()
 app.mainloop()
 server.close()
-HandleClient(conn,address,sign)
+
