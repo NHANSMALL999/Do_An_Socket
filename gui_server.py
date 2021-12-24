@@ -2,6 +2,9 @@
 import socket
 import threading
 import pyodbc #thêm thư viện để kết nối với sql
+from bs4 import BeautifulSoup #Hiển thị data dưới dạng xml
+import requests #Gửi yêu cầu đến web
+
 PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
 FORMAT="utf_16"
