@@ -68,52 +68,103 @@ import pyodbc
 
 
 
-#def CrawlDataFromWeb():
-url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, features="lxml")
 
-list_ThoiGian = []
-list_TenNT = []
-list_MaNT = []
-list_MuaTienMat = []
-list_MuaChuyenKhoan = []
-list_Ban = []
 
-#Crawl thời gian
-tag = soup.find("datetime")
-list_ThoiGian.append(tag.next)
-list_ThoiGian = [w[:10] for w in list_ThoiGian] #Tách string trong list từ ['12/23/2021 1:21:55 PM'] thành ['12/23/2021']
-
-#Crawl tỷ giá tiền tệ
-for tag in soup.find_all("exrate"):
-    list_TenNT.append(tag.get("currencyname"))
-    list_MaNT.append(tag.get("currencycode"))
-    list_MuaTienMat.append(tag.get("buy"))
-    list_MuaChuyenKhoan.append(tag.get("transfer"))
-    list_Ban.append(tag.get("sell"))
-
+#Hàm gửi ngày tháng cho client
+l = """
 conx = pyodbc.connect(
 "Driver={ODBC Driver 17 for SQL Server};"
 "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
 "Database=EXCHANGE_RATE;"
 "Trusted_Connection=yes;")
 cursor = conx.cursor()
-temp = ""
-i = 0
-for data in list_TenNT:
-    cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
-    i = i+1
-    conx.commit() 
+list = []
+for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ?","AUD"):
+    list.append(row[0])
+print(list)
+conx.close()
+"""
 
-#i = 0
-#for data in list_TenNT:
-#    cursor.execute("UPDATE homeaddresses SET TenNgoaiTe=?,,address=?,city=?,state=?,pincode=? where id=?",
+def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+    i = 0
+    for data in list_TenNT:
+        cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
+        i = i+1
+        conx.commit() 
 
-#    i = i + 1
-#    conx.commit()
-#conx.close()        
+def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+    i = 0
+    for data in list_MaNT:
+        cursor.execute("UPDATE EXCHANGE_RATE_DATA SET TenNgoaiTe=?,MaNT=?,MuaTienMat=?,MuaChuyenKhoan=?,Ban=? where ThoiGian=? AND MaNT = ?",
+        list_TenNT[i], 
+        list_MaNT[i], 
+        list_MuaTienMat[i], 
+        list_MuaChuyenKhoan[i], 
+        list_Ban[i],
+        list_ThoiGian[0],
+        list_MaNT[i])
+        i = i + 1
+        conx.commit()
+
+def CrawlDataFromWeb():
+    url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
+    try:
+        response = requests.get(url)
+    #Không thể gửi request tới trang web
+    except:
+        print("CAN NOT CONNECT TO WEBSITE!!!")
+    
+    #Hiển thị dưới dạng xml
+    soup = BeautifulSoup(response.text, features="lxml")
+
+
+    list_ThoiGian = []
+    list_TenNT = []
+    list_MaNT = []
+    list_MuaTienMat = []
+    list_MuaChuyenKhoan = []
+    list_Ban = []
+
+    ### Crawl thời gian ###
+    
+    tag = soup.find("datetime")
+    list_ThoiGian.append(tag.next)
+    list_ThoiGian = [w[:10] for w in list_ThoiGian] #Tách string trong list từ ['12/23/2021 1:21:55 PM'] thành ['12/23/2021']
+
+    ### Crawl tỷ giá tiền tệ ###
+    for tag in soup.find_all("exrate"):
+        list_TenNT.append(tag.get("currencyname"))
+        list_MaNT.append(tag.get("currencycode"))
+        list_MuaTienMat.append(tag.get("buy"))
+        list_MuaChuyenKhoan.append(tag.get("transfer"))
+        list_Ban.append(tag.get("sell"))
         
+    ### Tạo kết nối ###
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+    cursor = conx.cursor()
+
+    check = ""
+    MaNT = "USD"
+
+    #Kiểm tra nếu data của ngày đó đã có trong csdl thì check = "exist"
+    for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ? AND MaNT = ?", list_ThoiGian[0], MaNT):
+        check = "exist"
+    
+    #Chưa có dữ liệu của ngày ... thì insert
+    if(check != "exist"):
+        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)
+   
+    #Nếu ngày ... đã có dữ liệu rồi thì update
+    else:
+        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)    
+    
+    conx.close()        
+
+   
         
         
 #print(list_ThoiGian)    

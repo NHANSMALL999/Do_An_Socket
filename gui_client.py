@@ -35,7 +35,7 @@ def RecieveList(client, list):
 """
 
 #Hàm nhận danh sách
-def RecieveList(client, list):
+def RecieveList(client):
     list = []
     data = ""
     data= client.recv(1024).decode(FORMAT)
@@ -49,11 +49,11 @@ def RecieveList(client, list):
 #
 #Hàm nhận toàn bộ bảng data từ server
 def GetAllDataFromServer(client,list):
-    RecieveList(client, list)
+    RecieveList(client)
 
 #Hàm nhận data theo tên từ server
-def GetSpeDataFromServer(client, list):
-    RecieveList(client, list)
+def GetSpeDataFromServer(client):
+    RecieveList(client)
 
 
 ##################
@@ -109,7 +109,7 @@ class VndEx_App(tk.Tk):
             try:
                 client.send("0".encode(FORMAT))
                 client.recv(1024)
-                client.close
+                client.close()
                 ###################################
                 self.destroy()
             except:
@@ -245,22 +245,22 @@ class HomePage(tk.Frame):
         frame_show.grid(row=2, column=0, padx=5, pady=5)
 
         # frame top ----------------------------------------------------------
-        button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
-        button_logOut.place(x=870, y=15)
+        #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_log_out(controller))
+        #button_logOut.place(x=870, y=15)
 
         # frame options ----------------------------------------------------------
         button_search = tk.Button(frame_options, text="Search", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.ClickSearch(client,str(click_list_day.get()),str(click_list_type.get())))
         button_search.config(height=0, width=12)
         button_search.place(x=520, y=26)
 
-        button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
-        button_clear.config(height=0, width=12)
-        button_clear.place(x=670, y=26)
-
-        list_day = [
-            "09/12/2021", 
-            "10/12/2021"
-        ]
+        #button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
+        #button_clear.config(height=0, width=12)
+        #button_clear.place(x=670, y=26)
+        list_day = RecieveList(client)
+        #list_day = [
+        #    "09/12/2021", 
+        #    "10/12/2021"
+        #]
 
         list_type = [
             "All",
@@ -311,17 +311,17 @@ class HomePage(tk.Frame):
         self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=13)
         self.treeView_show.grid(row=0, column=0, sticky='nsew')
 
-        self.treeView_show.column("# 1", anchor='center', width=200)
-        self.treeView_show.column("# 2", anchor='center', width=150)
-        self.treeView_show.column("# 3", anchor='center', width=200)
-        self.treeView_show.column("# 4", anchor='center', width=200)
-        self.treeView_show.column("# 5", anchor='center', width=200)
+        self.treeView_show.column("# 1", anchor='w', width=200)
+        self.treeView_show.column("# 2", anchor='w', width=150)
+        self.treeView_show.column("# 3", anchor='w', width=200)
+        self.treeView_show.column("# 4", anchor='w', width=200)
+        self.treeView_show.column("# 5", anchor='w', width=200)
 
-        self.treeView_show.heading(1, text="Tên ngoại tệ")
-        self.treeView_show.heading(2, text="Mã ngoại tệ")
-        self.treeView_show.heading(3, text="Mua tiền mặt")
-        self.treeView_show.heading(4, text="Mua chuyển khoản")
-        self.treeView_show.heading(5, text="Bán")
+        self.treeView_show.heading(1, text="Tên ngoại tệ",anchor='w')
+        self.treeView_show.heading(2, text="Mã ngoại tệ",anchor='w')
+        self.treeView_show.heading(3, text="Mua tiền mặt",anchor='w')
+        self.treeView_show.heading(4, text="Mua chuyển khoản",anchor='w')
+        self.treeView_show.heading(5, text="Bán",anchor='w')
 
         # Add Scrollbar
         scrollbar = ttk.Scrollbar(frame_show, orient=tk.VERTICAL, command=self.treeView_show.yview)
@@ -347,7 +347,7 @@ class HomePage(tk.Frame):
             client.recv(1024)
             client.send(ma.encode(FORMAT))
             list = []
-            list = RecieveList(client,list)
+            list = RecieveList(client)
             list = self.Convert(list)
             #if (list == []):
 
@@ -381,9 +381,18 @@ class HomePage(tk.Frame):
     def click_search(self):
         pass
 
-    def click_log_out(self):
-        pass
-  
+    def click_log_out(self, controller):
+        try:
+            client.send("0".encode(FORMAT))
+            client.recv(1024)
+            client.close()
+            ###################################
+            client.connect((SERVER, PORT))
+            controller.showFrame(StartPage)
+
+        except:
+            client.close()
+            self.destroy()
         
         
 ###################
@@ -409,7 +418,7 @@ def click_login(controller, client, id, pw):
         else:
             notification(ERROR, "Connection was corrupted!!!")
     except:
-        notification(ERROR, "Connection was corrupted!!!")
+        notification(ERROR, "Serser closed!!!")
            
 def click_signup(controller, client, id, pw):
     try:

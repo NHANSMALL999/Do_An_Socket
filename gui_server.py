@@ -10,9 +10,110 @@ LOGIN="logIn"
 SIGNUP="signUp"
 table = "EXCHANGE_RATE_9_12_21"   
 
+#################### LẤY DỮ LIỆU TỪ WEBSITE ####################
+
+#Hàm insert dữ liệu mới vào sql
+def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+    i = 0
+    for data in list_TenNT:
+        cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
+        i = i+1
+        conx.commit() 
+
+#Hàm update dữ liệu trong sql
+def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+    i = 0
+    for data in list_MaNT:
+        cursor.execute("UPDATE EXCHANGE_RATE_DATA SET TenNgoaiTe=?,MaNT=?,MuaTienMat=?,MuaChuyenKhoan=?,Ban=? where ThoiGian=? AND MaNT = ?",
+        list_TenNT[i], 
+        list_MaNT[i], 
+        list_MuaTienMat[i], 
+        list_MuaChuyenKhoan[i], 
+        list_Ban[i],
+        list_ThoiGian[0],
+        list_MaNT[i])
+        i = i + 1
+        conx.commit()
+
+#Hàm lấy dữ liệu từ web và insert/update vào sql
+def CrawlDataFromWeb():
+    url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
+    try:
+        response = requests.get(url)
+    #Không thể gửi request tới trang web
+    except:
+        print("CAN NOT CONNECT TO WEBSITE!!!")
+    
+    #Hiển thị dưới dạng xml
+    soup = BeautifulSoup(response.text, features="lxml")
+
+
+    list_ThoiGian = []
+    list_TenNT = []
+    list_MaNT = []
+    list_MuaTienMat = []
+    list_MuaChuyenKhoan = []
+    list_Ban = []
+
+    ### Crawl thời gian ###
+    
+    tag = soup.find("datetime")
+    list_ThoiGian.append(tag.next)
+    list_ThoiGian = [w[:10] for w in list_ThoiGian] #Tách string trong list từ ['12/23/2021 1:21:55 PM'] thành ['12/23/2021']
+
+    ### Crawl tỷ giá tiền tệ ###
+    for tag in soup.find_all("exrate"):
+        list_TenNT.append(tag.get("currencyname"))
+        list_MaNT.append(tag.get("currencycode"))
+        list_MuaTienMat.append(tag.get("buy"))
+        list_MuaChuyenKhoan.append(tag.get("transfer"))
+        list_Ban.append(tag.get("sell"))
+        
+    ### Tạo kết nối ###
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+    cursor = conx.cursor()
+
+    check = ""
+    MaNT = "USD"
+
+    #Kiểm tra nếu data của ngày đó đã có trong csdl thì check = "exist"
+    for row in cursor.execute("select * from EXCHANGE_RATE_DATA where ThoiGian = ? AND MaNT = ?", list_ThoiGian[0], MaNT):
+        check = "exist"
+    
+    #Chưa có dữ liệu của ngày ... thì insert
+    if(check != "exist"):
+        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)
+   
+    #Nếu ngày ... đã có dữ liệu rồi thì update
+    else:
+        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)    
+    
+    conx.close()  
+###################################################
+
+
+# Hàm lấy ngày từ sql
+def GetDate():
+    conx = pyodbc.connect(
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=DESKTOP-S8G0HJG\SQLEXPRESS;"
+    "Database=EXCHANGE_RATE;"
+    "Trusted_Connection=yes;")
+    cursor = conx.cursor()
+    list = []
+    for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ?","AUD"):
+        list.append(row[0])
+    conx.close()
+    return list
+    
 #Ham xu ly Login hoặc Signup
 def choose(choice,conn, sign):
     conn.send(choice.encode(FORMAT))
+    username = ""
     if(choice==LOGIN):
         #Nhan ten va password
         username=conn.recv(1024).decode(FORMAT)
@@ -21,7 +122,8 @@ def choose(choice,conn, sign):
         conn.send(passw.encode(FORMAT))
         #Kiem tra thong tin va gui phan hoi cho client
         sign = AccountCheck(conn, username, passw, sign)
-        
+        list = [sign,username]
+        return list
     elif(choice==SIGNUP):
         #Nhan ten, password va password again
         username=conn.recv(1024).decode(FORMAT)
@@ -31,10 +133,11 @@ def choose(choice,conn, sign):
        
         #Dang ky cho client
         sign = Signup(conn, username, passw,sign)
+        list = [sign,username]
+        return list
     else:
-        print("end")
-
-    return sign
+       print("enddddddddd")
+       return ["",""]
         
 
 #Hàm kiểm tra id và pw      
@@ -338,7 +441,7 @@ class HomePage(tk.Frame):
 
         # Frame show --------------------------------------
         self.text_show = scrolledtext.ScrolledText(frame_show, bd=0)
-        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=122, height=21)
+        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=96, height=18)
         self.text_show.pack()
         # Default run -------------------------------------
         self.print_default_IP_Port()
@@ -367,9 +470,9 @@ class HomePage(tk.Frame):
             self.run = True
             self.clear_text_show()
             self.print_show_server_start()
-
+            #server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             #self.run_server()
-            server.bind((SERVER, PORT))
+
             server.listen()
             print("Server is waiting...")
             print()
@@ -389,24 +492,35 @@ class HomePage(tk.Frame):
 
     def HandleClient(self,conn,address,sign):
         #print("Connected to ", address)
+        list = GetDate()
+        SendList(conn,list)
+        print("send successfull")
         choice=conn.recv(1024).decode(FORMAT)
         print()
         while(sign != "0"):
             if(self.run == False):
-                print("Connect iss closed")
+                print("Connect is closed")
                 conn.close()
                 return
-            sign = choose(choice, conn,sign)
+            list = choose(choice, conn,sign)
+            sign = list[0]
+            id = list[1]
+            if sign == "0":
+                self.print_show_client_login(address[0], address[1], id)
+        
 
         
-        while(True):
-            date=conn.recv(1024).decode(FORMAT)                        
-            if(self.run == False):
-                print("Connect iss closed")
+        try:
+            while(True):
+                date=conn.recv(1024).decode(FORMAT)                        
+                if(self.run == False):
+                    print("Connect iss closed")
+                    conn.close()
+                    return
+                request(conn,date)
+        except:
+            self.print_show_client_logout(address[0],address[1],id)
 
-                conn.close()
-                return
-            request(conn,date)
             
     
         print("Connection with ", address, " ended")
@@ -474,15 +588,15 @@ class HomePage(tk.Frame):
         self.text_show.configure(state='disable')
 
     def print_default_IP_Port(self):
-        self.entry_ip.insert(0, "127.0.0.1")
-        self.entry_port.insert(0, "8888")
+        self.entry_ip.insert(0, SERVER)
+        self.entry_port.insert(0, PORT)
         
         
 
 
 ############################################# HÀM MAIN ##################################################
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
-
+server.bind((SERVER, PORT))
 
 
 #nClient=0
