@@ -4,6 +4,7 @@ import threading
 import pyodbc #thêm thư viện để kết nối với sql
 from bs4 import BeautifulSoup #Hiển thị data dưới dạng xml
 import requests #Gửi yêu cầu đến web
+import time #set thời gian
 
 PORT=8000
 SERVER=socket.gethostbyname(socket.gethostname())
@@ -16,7 +17,7 @@ table = "EXCHANGE_RATE_9_12_21"
 #################### LẤY DỮ LIỆU TỪ WEBSITE ####################
 
 #Hàm insert dữ liệu mới vào sql
-def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan,list_Ban):
     i = 0
     for data in list_TenNT:
         cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
@@ -24,7 +25,7 @@ def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaT
         conx.commit() 
 
 #Hàm update dữ liệu trong sql
-def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan, list_Ban):
     i = 0
     for data in list_MaNT:
         cursor.execute("UPDATE EXCHANGE_RATE_DATA SET TenNgoaiTe=?,MaNT=?,MuaTienMat=?,MuaChuyenKhoan=?,Ban=? where ThoiGian=? AND MaNT = ?",
@@ -40,6 +41,7 @@ def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaT
 
 #Hàm lấy dữ liệu từ web và insert/update vào sql
 def CrawlDataFromWeb():
+    print("Runing...")
     url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
     try:
         response = requests.get(url)
@@ -89,15 +91,19 @@ def CrawlDataFromWeb():
     
     #Chưa có dữ liệu của ngày ... thì insert
     if(check != "exist"):
-        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)
+        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan, list_Ban)
    
     #Nếu ngày ... đã có dữ liệu rồi thì update
     else:
-        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)    
-    
-    conx.close()  
+        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan, list_Ban)
+    conx.close()
 ###################################################
-
+#Hàm thời gian
+def Repeat():
+    while(True):
+        time.sleep(1800)
+        CrawlDataFromWeb()
+    
 
 # Hàm lấy ngày từ sql
 def GetDate():
@@ -108,7 +114,7 @@ def GetDate():
     "Trusted_Connection=yes;")
     cursor = conx.cursor()
     list = []
-    for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ?","AUD"):
+    for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ?","USD"):
         list.append(row[0])
     conx.close()
     return list
@@ -470,6 +476,7 @@ class HomePage(tk.Frame):
             
     def click_run(self, controller):
         if self.run == False:
+            
             self.run = True
             self.clear_text_show()
             self.print_show_server_start()
@@ -572,12 +579,12 @@ class HomePage(tk.Frame):
 
     def print_show_server_start(self):
         self.text_show.configure(state='normal')
-        self.text_show.insert('insert', f"[Server][Opened]     IP:{self.entry_ip.get()} - Port:{self.entry_port.get()}\n")
+        self.text_show.insert('insert', f"[Server][Opened]     IP:{self.entry_ip.get()} - Port:{self.entry_port.get()}\n\n")
         self.text_show.configure(state='disable')
 
     def print_show_server_close(self):
         self.text_show.configure(state='normal')
-        self.text_show.insert('insert', "[Server][Closed]\n")
+        self.text_show.insert('insert', "[Server][Closed]\n\n")
         self.text_show.configure(state='disable')
 
     def print_show_client_login(self, ip, port, username):
@@ -610,7 +617,7 @@ while(nClient<2):
 
         conn, address = server.accept()
         clientThread=threading.Thread(target=HandleClient, args=(conn, address, sign))
-        clientThread.daemon = False
+        clientThread.daemon = True
         clientThread.start()
                                    
     except:
@@ -621,6 +628,10 @@ while(nClient<2):
 input()
 print("End")
 """
+
+DataThread=threading.Thread(target= Repeat, args=())
+DataThread.daemon = True
+DataThread.start()
 
 
 app = VndEx_App()

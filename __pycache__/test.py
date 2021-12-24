@@ -43,6 +43,19 @@ from bs4 import BeautifulSoup
 #import urllib.request
 import requests
 import pyodbc
+
+import sched, time
+ttt = """
+s = sched.scheduler(time.time, time.sleep)
+def do_something(s): 
+    print("Doing stuff...")
+    # do your stuff
+    s.enter(5, 1, do_something, (s,))
+
+s.enter(5, 1, do_something, (s,))
+s.run()
+"""
+
 #try:
 #    import xml.etree.cElementTree as ET
 #except ImportError:
@@ -85,14 +98,14 @@ print(list)
 conx.close()
 """
 
-def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+def InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan,list_Ban):
     i = 0
     for data in list_TenNT:
         cursor.execute("insert EXCHANGE_RATE_DATA values (?,?,?,?,?,?)", list_ThoiGian[0], list_TenNT[i], list_MaNT[i], list_MuaTienMat[i], list_MuaChuyenKhoan[i], list_Ban[i])
         i = i+1
         conx.commit() 
 
-def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan):
+def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan,list_Ban):
     i = 0
     for data in list_MaNT:
         cursor.execute("UPDATE EXCHANGE_RATE_DATA SET TenNgoaiTe=?,MaNT=?,MuaTienMat=?,MuaChuyenKhoan=?,Ban=? where ThoiGian=? AND MaNT = ?",
@@ -107,6 +120,7 @@ def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaT
         conx.commit()
 
 def CrawlDataFromWeb():
+    print("runing...")
     url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
     try:
         response = requests.get(url)
@@ -116,7 +130,6 @@ def CrawlDataFromWeb():
     
     #Hiển thị dưới dạng xml
     soup = BeautifulSoup(response.text, features="lxml")
-
 
     list_ThoiGian = []
     list_TenNT = []
@@ -156,14 +169,16 @@ def CrawlDataFromWeb():
     
     #Chưa có dữ liệu của ngày ... thì insert
     if(check != "exist"):
-        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)
+        InsertCurrencyToSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan,list_Ban)
    
     #Nếu ngày ... đã có dữ liệu rồi thì update
     else:
-        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan)    
-    
+        UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan,list_Ban)    
+    while(True):
+        time.sleep(5)
+        CrawlDataFromWeb()
     conx.close()        
-
+    
    
         
         
@@ -228,3 +243,5 @@ def GetSpeDataFromServer(client, list):
             ###################################
             self.destroy()
 """
+
+CrawlDataFromWeb()
