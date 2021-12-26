@@ -1,6 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\__pycache__"
   ],
+  "SelectedNode": "\\gui_client.py",
   "PreviewInSolutionExplorer": true
 }

@@ -101,8 +101,9 @@ def CrawlDataFromWeb():
 #Hàm thời gian
 def Repeat():
     while(True):
-        time.sleep(1800)
         CrawlDataFromWeb()
+        time.sleep(1800)
+        
     
 
 # Hàm lấy ngày từ sql
@@ -566,7 +567,6 @@ class HomePage(tk.Frame):
 
 
     def log_out(self):
-        
         pass
 
     def delay(self, controller, second):
@@ -608,26 +608,6 @@ class HomePage(tk.Frame):
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
 server.bind((SERVER, PORT))
 
-
-#nClient=0
-t = """
-while(nClient<2):
-    try:
-       
-
-        conn, address = server.accept()
-        clientThread=threading.Thread(target=HandleClient, args=(conn, address, sign))
-        clientThread.daemon = True
-        clientThread.start()
-                                   
-    except:
-        print("Client ",address, "is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
-        
-    nClient+=1
-
-input()
-print("End")
-"""
 
 DataThread=threading.Thread(target= Repeat, args=())
 DataThread.daemon = True

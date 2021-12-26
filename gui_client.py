@@ -46,15 +46,6 @@ def RecieveList(client):
     #print(list)
     return list
 
-#
-#Hàm nhận toàn bộ bảng data từ server
-def GetAllDataFromServer(client,list):
-    RecieveList(client)
-
-#Hàm nhận data theo tên từ server
-def GetSpeDataFromServer(client):
-    RecieveList(client)
-
 
 ##################
 def notification(type, message):
