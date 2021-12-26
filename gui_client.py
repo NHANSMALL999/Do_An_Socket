@@ -15,7 +15,8 @@ from tkinter import ttk
 
 HEADER_FONT = ("Open Sans", 16,"bold")
 BUTTON_FONT = ("Open Sans", 12, "bold")
-REGULAR_FONT= ("Open Sans", 12)
+REGULAR_FONT= ("Open Sans", 10, 'bold')
+ENTRY_FONT= ("Open Sans", 10, "bold")
 
 # colors
 WHITE    = '#F2F2F2'
