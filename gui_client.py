@@ -82,14 +82,14 @@ class VndEx_App(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, SignUpPage, HomePage):
+        for F in (StartPage, SignUpPage, HomePage, ConnectPage):
             frame = F(container, self)
 
             self.frames[F] = frame 
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.showFrame(StartPage)
+        self.showFrame(ConnectPage)
 
     def showFrame(self, container):
         frame = self.frames[container]
@@ -405,6 +405,73 @@ class HomePage(tk.Frame):
         
         
 ###################
+class ConnectPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        #self.configure(bg=PURPLE_3)
+
+        # main frames
+        frame_left = tk.Frame(self, height=300, width=250, bg=PURPLE_2)
+        frame_left.grid(row=0, column=0)
+
+        frame_right = tk.Frame(self, height=300, width=365, bg=PURPLE_1)
+        frame_right.grid(row=0, column=1)
+
+        # Frame left --------------------------------------------------------
+        canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.pack()
+
+        # Frame right
+        x_show = 55
+
+        label_title = tk.Label(frame_right, text="KẾT NỐI VỚI SERVER", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_title.place(x=x_show+10,y=40)
+
+        label_ip = tk.Label(frame_right, text="Địa chỉ IP", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_ip.place(x=x_show-2,y=90)
+
+        label_port = tk.Label(frame_right, text="Port", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_port.place(x=x_show+170,y=90)
+
+        # Entry
+        self.entry_ip = tk.Entry(frame_right, width=15)
+        self.entry_ip.config(font=BUTTON_FONT)
+        self.entry_ip.place(x=x_show, y=110)
+
+        self.entry_port = tk.Entry(frame_right, width=8)
+        self.entry_port.config(font=BUTTON_FONT)
+        self.entry_port.place(x=x_show+170, y=110)
+
+        # Button
+        button_connect = tk.Button(frame_right, text="Kết nối", fg=WHITE, bg=PURPLE_3, font=REGULAR_FONT, width=15)
+        button_connect.config(command=lambda:controller.showFrame(StartPage))
+        button_connect.place(x=x_show+55, y=200)
+
+        # Checkbox
+        self.var_checkChoose = tk.IntVar()
+
+        checkBox_default = tk.Checkbutton(frame_right, text="Đặt mặc định", font=REGULAR_FONT, bg=PURPLE_1, fg=PURPLE_4)
+        checkBox_default.config(command=self.click_default, variable=self.var_checkChoose)
+        checkBox_default.place(x=x_show, y=145)
+    
+    def click_default(self):
+        if self.var_checkChoose.get() == 1:
+            self.entry_ip.delete(0, tk.END)
+            self.entry_port.delete(0, tk.END)
+            self.entry_ip.insert(0, "127.0.0.1")
+            self.entry_port.insert(0, "8000")
+            self.entry_ip.config(state='disable')
+            self.entry_port.config(state='disable')
+        else:
+            self.entry_ip.config(state='normal')
+            self.entry_port.config(state='normal')
+            self.entry_ip.delete(0, tk.END)
+            self.entry_port.delete(0, tk.END)
+
+    def click_connect(self):
+        pass
+
 def click_login(controller, client, id, pw):
     try:
         #Gui lua chon
