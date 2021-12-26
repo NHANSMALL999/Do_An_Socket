@@ -301,6 +301,13 @@ ERROR = -1
 WARNING = 0
 INFO = 1
 
+# colors
+WHITE    = '#F2F2F2'
+PURPLE_1 = '#A9ABD9'
+PURPLE_2 = '#585CA6'
+PURPLE_3 = '#3C41A6'
+PURPLE_4 = '#040B8C'
+
 ##################
 def notification(type, message):
     if type == ERROR:
@@ -315,7 +322,6 @@ class VndEx_App(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        self.geometry("400x300")
         self.resizable(width=False, height=False)
         self.title("VndEx - server")
         self.configure(bg="#CED0F2")
@@ -359,115 +365,132 @@ class VndEx_App(tk.Tk):
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="#CED0F2")
-        self.pack()
+        self.configure(bg=PURPLE_1)
 
-        #FRAME 1 
-        frame_1 = tk.Frame(self, bd=0, relief='flat')
-        frame_1.configure(bg="#CED0F2")
+        # Main frame --------------------------------------------------------
+        frame_left = tk.Frame(self, height=300, width=250, bg=PURPLE_2)
+        frame_left.grid(row=0, column=0)
 
-        label_title = tk.Label(frame_1, text="LOG IN PAGE", font=HEADER_FONT,fg='#164DF2',bg="#CED0F2")
-        label_user = tk.Label(frame_1, text="username",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
-        label_user.config(anchor='center')
-        label_pswd = tk.Label(frame_1, text="password",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
+        frame_right = tk.Frame(self, height=300, width=350, bg=PURPLE_1)
+        frame_right.grid(row=0, column=1)
 
-        self.label_blank_1 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_2 = tk.Label(frame_1,text="",bg="#CED0F2")
-
-        self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-        self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-
-        button_log = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:controller.showFrame(HomePage)) 
-        button_log.configure(width=10)
-
-        #########################################################################
-        canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
+        # Frame left --------------------------------------------------------
+        canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
         canvas.create_text(113,150, text="SERVER", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.pack()
 
-        
-        ## PACK
-        self.label_blank_1.grid(row=0,column=2)
-        label_title.grid(row=1,column=3, columnspan=3)
+        # Frame right --------------------------------------------------------
+        label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_title.place(x=120,y=55)
 
-        label_user.grid(row=2,column=3, sticky='w')
-        self.entry_user.grid(row=3,column=3, sticky='nsew')
+        x_show = 90
 
-        label_pswd.grid(row=4,column=3, sticky='w')
-        self.entry_pswd.grid(row=5,column=3, sticky='nsew')
+        label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_user.place(x=x_show,y=95)
 
-        self.label_blank_2.grid(row=6,column=3)
-        button_log.grid(row=7,column=3)
+        label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_pwd.place(x=x_show,y=145)
 
-        canvas.place(x=0,y=0)
-        frame_1.place(x=320, y=30)
-        ####################################################################
+        self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_user.place(x=x_show,y=115)
 
+        self.entry_pwd = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_pwd.place(x=x_show,y=165)
+
+        button_log = tk.Button(frame_right,text="ĐĂNG NHẬP",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:self.click_log_in(controller)) 
+        button_log.configure(width=10)
+        button_log.place(x=x_show+35, y=205)
+        #########################################################################
+    def click_log_in(self, controller):
+        id = str(self.entry_user.get())
+        pwd = str(self.entry_pwd.get())
+
+        self.entry_user.delete(0, tk.END)
+        self.entry_pwd.delete(0, tk.END)
+
+        list_account = [("1", "1"),("server123", "server123")]
+
+        input = (id, pwd)
+
+        for account in list_account:
+            if input == account:
+                controller.showFrame(HomePage)
+                return     
+        notification(ERROR, "Tên đăng nhập hoặc mật khẩu sai!!!\nVui lòng nhập lại.")
 
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent) 
-        self.configure(bg="#FFFFFF")
+        self.configure(bg=PURPLE_2)
 
         self.run = False
 
         # Main frame
-        frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=880)
+        frame_top = tk.Frame(self, bg=PURPLE_2, height=50, width=880)
         frame_top.grid(row=0, column=0, padx=5, pady=10, sticky='w')
 
-        frame_options = tk.LabelFrame(self, text = "Options", font=("Open Sans", 12, 'bold'), bg="#FFFFFF", fg="#000000", bd=3, height=100, width=880)
+        frame_options = tk.LabelFrame(self, text = "Tùy chọn", font=("Open Sans", 12, 'bold'), bg=PURPLE_1, fg=PURPLE_4, bd=3, height=100, width=880)
         frame_options.grid(row=1, column=0, padx=0, pady=5, sticky='w')
 
         frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=800, bd=3)
         frame_show.grid(row=2, column=0, padx=0, ipady=5, sticky='w')
-
         
         # Frame top --------------------------------------
-        button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
-        button_logOut.place(x=770, y=15)
+        #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
+        #button_logOut.place(x=770, y=15)
+        canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
+        ##
+        canvas_name_top.create_text(110,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
+        ##
+        canvas_name_top.place(x=0, y=10)
 
         # Frame options --------------------------------------
-        button_run = tk.Button(frame_options, text="Run", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_run(controller))
-        button_run.config(height=0, width=12)
-        button_run.place(x=550, y=25)
+        self.button_run = tk.Button(frame_options, text="Chạy", font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, command=lambda:self.click_run(controller))
+        self.button_run.config(height=0, width=12)
+        self.button_run.place(x=550, y=25)
 
-        button_stop = tk.Button(frame_options, text="Stop", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_stop(controller))
-        button_stop.config(height=0, width=12)
-        button_stop.place(x=700, y=25)
+        self.button_stop = tk.Button(frame_options, text="Dừng", font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, command=lambda:self.click_stop(controller))
+        self.button_stop.config(height=0, width=12)
+        self.button_stop.place(x=700, y=25)
 
-        canvas_name_option = tk.Canvas(frame_options, bg="#FFFFFF", height=20, width=340, highlightthickness=0)
+        canvas_name_option = tk.Canvas(frame_options, bg=PURPLE_1, height=20, width=340, highlightthickness=0)
         ##
-        canvas_name_option.create_text(133,12,text="IP address",font=("Arial", 10, 'bold'),fill="#000000")
-        canvas_name_option.create_text(283,12,text="Port",font=("Open Sans", 10, 'bold'),fill="#000000")
+        canvas_name_option.create_text(131,12,text="Địa chỉ IP",font=("Arial", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(284,12,text="Port",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
         ##
-        canvas_name_option.place(x=0, y=6)
+        canvas_name_option.place(x=0, y=10)
 
-        self.entry_ip = tk.Entry(frame_options, width=13 ,bg='#F2F2F2', font=REGULAR_FONT, bd=2)
+        self.entry_ip = tk.Entry(frame_options, width=13 ,bg=WHITE, font=REGULAR_FONT, bd=2)
         self.entry_ip.place(x=100, y=30)
 
-        self.entry_port = tk.Entry(frame_options, width=9,bg='#F2F2F2', font=REGULAR_FONT, bd=2)
+        self.entry_port = tk.Entry(frame_options, width=9,bg=WHITE, font=REGULAR_FONT, bd=2)
         self.entry_port.place(x=270, y=30)
 
         # Frame show --------------------------------------
         self.text_show = scrolledtext.ScrolledText(frame_show, bd=0)
-        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=96, height=18)
-        self.text_show.pack()
+        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=122, height=21)
+        self.text_show.pack(side='left')
+        
         # Default run -------------------------------------
         self.print_default_IP_Port()
         self.print_show_server_close()
+        
+        if self.run:
+            self.button_run.config(state='disable')
+            self.button_stop.config(state='normal')
+        else:
+            self.button_run.config(state='normal')
+            self.button_stop.config(state='disable')
         ############################################################################
     def client_login(self, ip, port, username):
         self.print_show_client_login(ip, port, username)
 
-    def click_restart(self):
-        pass
-    
-    def click_logout(self):
-        pass
-
     def click_stop(self, controller): 
         if self.run:
             self.run = False
+            self.button_stop.config(state='disable')
+            self.button_run.config(state='normal')
             self.delay(controller, float(0.5))
             self.clear_text_show()
             self.print_show_server_close()
@@ -476,8 +499,9 @@ class HomePage(tk.Frame):
             
     def click_run(self, controller):
         if self.run == False:
-            
             self.run = True
+            self.button_stop.config(state='normal')
+            self.button_run.config(state='disable')
             self.clear_text_show()
             self.print_show_server_start()
             #server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -518,8 +542,6 @@ class HomePage(tk.Frame):
             if sign == "0":
                 self.print_show_client_login(address[0], address[1], id)
         
-
-        
         try:
             while(True):
                 date=conn.recv(1024).decode(FORMAT)                        
@@ -531,8 +553,6 @@ class HomePage(tk.Frame):
         except:
             self.print_show_client_logout(address[0],address[1],id)
 
-            
-    
         print("Connection with ", address, " ended")
         #conn.close()
 
@@ -550,23 +570,15 @@ class HomePage(tk.Frame):
             except:
                 print("Client ",address, "is disconnectedddddddddd.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
             
-
-
-    def close_server(self,conn):
-        
+    def close_server(self,conn): 
         pass
 
     def run_server(self):
         server.bind((SERVER, PORT))
         server.listen()
         print("Server is waiting...")
-        
-       
-
-
 
     def log_out(self):
-        
         pass
 
     def delay(self, controller, second):
