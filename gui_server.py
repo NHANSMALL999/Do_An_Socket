@@ -344,7 +344,7 @@ class VndEx_App(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.showFrame(HomePage)
+        self.showFrame(StartPage)
 
     def showFrame(self, container):
         frame = self.frames[container]
