@@ -17,6 +17,12 @@ HEADER_FONT = ("Open Sans", 16,"bold")
 BUTTON_FONT = ("Open Sans", 12, "bold")
 REGULAR_FONT= ("Open Sans", 12)
 
+# colors
+WHITE    = '#F2F2F2'
+PURPLE_1 = '#A9ABD9'
+PURPLE_2 = '#585CA6'
+PURPLE_3 = '#3C41A6'
+PURPLE_4 = '#040B8C'
 
 #option
 ERROR = -1
@@ -88,7 +94,7 @@ class VndEx_App(tk.Tk):
     def showFrame(self, container):
         frame = self.frames[container]
         if container==HomePage:
-            self.geometry("1000x500")
+            self.geometry("1000x600")
         else:
             self.geometry("600x300")
         frame.tkraise()
@@ -110,126 +116,110 @@ class VndEx_App(tk.Tk):
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="#CED0F2")
-        self.pack()
+        self.configure(bg=PURPLE_1)
 
-        #FRAME 1 
-        frame_1 = tk.Frame(self, bd=0, relief='flat')
-        frame_1.configure(bg="#CED0F2")
+        # Main frame --------------------------------------------------------
+        frame_left = tk.Frame(self, height=300, width=250, bg=PURPLE_2)
+        frame_left.grid(row=0, column=0)
 
-        label_title = tk.Label(frame_1, text="LOG IN PAGE", font=HEADER_FONT,fg='#164DF2',bg="#CED0F2")
-        label_user = tk.Label(frame_1, text="username",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
-        label_user.config(anchor='center')
-        label_pswd = tk.Label(frame_1, text="password",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
+        frame_right = tk.Frame(self, height=300, width=350, bg=PURPLE_1)
+        frame_right.grid(row=0, column=1)
 
-        self.label_blank_1 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_2 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_3 = tk.Label(frame_1,text="",bg="#CED0F2")
+        # Frame left --------------------------------------------------------
+        canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.pack()
 
-        self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-        self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
+        # Frame right --------------------------------------------------------
+        label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_title.place(x=120,y=40)
 
+        x_show = 95
+
+        label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_user.place(x=x_show,y=80)
+
+        label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_pwd.place(x=x_show,y=130)
+
+        self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_user.place(x=x_show,y=100)
+
+        self.entry_pwd = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_pwd.place(x=x_show,y=150)
         
-        button_logIn = tk.Button(frame_1,text="LOG IN",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
-        button_logIn.configure(width=10)
-        button_goSignUp = tk.Button(frame_1,text="GO TO SIGN UP",font=("Open Sans", 10, "bold"),bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(SignUpPage)) 
-        button_goSignUp.configure(width=15)
+        button_log = tk.Button(frame_right,text="Đăng nhập",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
+        button_log.configure(width=10)
+        button_log.place(x=x_show+35, y=190)
 
+        label_gosign = tk.Label(frame_right, text="Chưa có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_gosign.place(x=x_show-60,y=250)
+
+        button_gosign = tk.Button(frame_right,text="Đăng ký",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(SignUpPage)) 
+        button_gosign.configure(width=10)
+        button_gosign.place(x=x_show+80, y=245)
         #########################################################################
-        canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
-        canvas.create_text(110,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
-
-        
-        ## PACK
-        self.label_blank_1.grid(row=1,column=2)
-        label_title.grid(row=1,column=3, columnspan=3)
-
-        label_user.grid(row=2,column=3, sticky='w')
-        self.entry_user.grid(row=3,column=3, sticky='nsew')
-
-        label_pswd.grid(row=4,column=3, sticky='w')
-        self.entry_pswd.grid(row=5,column=3, sticky='nsew')
-
-        self.label_blank_2.grid(row=6,column=3)
-        button_logIn.grid(row=7,column=3)
-
-        self.label_blank_3.grid(row=8,column=3)
-        button_goSignUp.grid(row=9,column=3)
-
-        canvas.place(x=0,y=0)
-        frame_1.place(x=320, y=30)
-        ####################################################################
 
 
 class SignUpPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="#CED0F2")
-        # ? khong dung pack() o day duoc?
-        #self.pack()
+        self.configure(bg=PURPLE_1)
 
-        #FRAME 1 
-        frame_1 = tk.Frame(self, bd=0, relief='flat')
-        frame_1.configure(bg="#CED0F2")
+        # Main frame --------------------------------------------------------
+        frame_left = tk.Frame(self, height=300, width=250, bg=PURPLE_2)
+        frame_left.grid(row=0, column=0)
 
-        label_title = tk.Label(frame_1, text="SIGN UP PAGE", font=HEADER_FONT,fg='#164DF2',bg="#CED0F2")
-        label_user = tk.Label(frame_1, text="username",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
-        label_user.config(anchor='center')
-        label_pswd = tk.Label(frame_1, text="password",fg='#164DF2',bg="#CED0F2",font=REGULAR_FONT)
+        frame_right = tk.Frame(self, height=300, width=350, bg=PURPLE_1)
+        frame_right.grid(row=0, column=1)
 
-        self.label_blank_1 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_2 = tk.Label(frame_1,text="",bg="#CED0F2")
-        self.label_blank_3 = tk.Label(frame_1,text="",bg="#CED0F2")
+        # Frame left --------------------------------------------------------
+        canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.pack()
 
-        self.entry_user = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
-        self.entry_pswd = tk.Entry(frame_1,width=20,bg='#EBEBF2', font=REGULAR_FONT)
+        # Frame right --------------------------------------------------------
+        x_show = 95
 
-        #id = self.entry_user.get()
-        #pw = self.entry_pswd.get()
+        label_title = tk.Label(frame_right, text="ĐĂNG KÝ", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_title.place(x=x_show+40,y=40)
 
-        button_signUp = tk.Button(frame_1,text="SIGN UP",font=BUTTON_FONT, bg="#6B8DF2",fg='#EBEBF2',command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
-        button_signUp.configure(width=10)
-        
-        button_goLogIn = tk.Button(frame_1,text="GO TO LOG IN",font=("Open Sans", 10, "bold"),bg="#6B8DF2",fg='floral white', command=lambda:controller.showFrame(StartPage)) 
-        button_goLogIn.configure(width=14)
+        label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_user.place(x=x_show,y=80)
 
+        label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_pwd.place(x=x_show,y=130)
+
+        self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_user.place(x=x_show,y=100)
+
+        self.entry_pwd = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
+        self.entry_pwd.place(x=x_show,y=150)
+
+        button_sign = tk.Button(frame_right,text="Đăng ký",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pswd.get()))) 
+        button_sign.configure(width=10)
+        button_sign.place(x=x_show+35, y=190)
+
+        label_golog = tk.Label(frame_right, text="Đã có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_golog.place(x=x_show-60,y=250)
+
+        button_golog = tk.Button(frame_right,text="Đăng nhập",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(StartPage)) 
+        button_golog.configure(width=10)
+        button_golog.place(x=x_show+60, y=245)
         #########################################################################
-        canvas = tk.Canvas(self, width=230, height=300, bg='#6B8DF2', bd=0)
-        canvas.create_text(110,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
-
-        
-        ## PACK
-        self.label_blank_1.grid(row=1,column=2)
-        label_title.grid(row=1,column=3, columnspan=3)
-
-        label_user.grid(row=2,column=3, sticky='w')
-        self.entry_user.grid(row=3,column=3, sticky='nsew')
-
-        label_pswd.grid(row=4,column=3, sticky='w')
-        self.entry_pswd.grid(row=5,column=3, sticky='nsew')
-
-        self.label_blank_2.grid(row=6,column=3)
-        button_signUp.grid(row=7,column=3)
-
-        self.label_blank_3.grid(row=8,column=3)
-        button_goLogIn.grid(row=9,column=3)
-
-        canvas.place(x=0,y=0)
-        frame_1.place(x=320, y=30)
-        ####################################################################
 
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.configure(bg="#FFFFFF")
+        self.configure(bg=PURPLE_2)
         self.contacts = []
         
         # Main frame ----------------------------------------------------------
-        frame_top = tk.Frame(self, bg="#FFFFFF", height=50, width=980)
+        frame_top = tk.Frame(self, bg=PURPLE_2, height=50, width=980)
         frame_top.grid(row=0, column=0, padx=5, pady=5)
         
-        frame_options = tk.LabelFrame(self, text = "Options", font=("Open Sans", 12, 'bold'), bg="#FFFFFF", fg="#000000", bd=3, height=100, width=970)
+        frame_options = tk.LabelFrame(self, text = "Tùy chọn", font=("Open Sans", 12, 'bold'), bg=PURPLE_1, fg=PURPLE_4, bd=3, height=100, width=970)
         frame_options.grid(row=1, column=0, padx=15, pady=0, sticky='w')
         
         frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=500, width=980)
@@ -238,20 +228,21 @@ class HomePage(tk.Frame):
         # frame top ----------------------------------------------------------
         #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_log_out(controller))
         #button_logOut.place(x=870, y=15)
+        canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
+        ##
+        canvas_name_top.create_text(110,15,text="VndEx Client",font=("Open Sans", 25, 'bold'),fill=WHITE)
+        ##
+        canvas_name_top.place(x=0, y=10)
 
         # frame options ----------------------------------------------------------
-        button_search = tk.Button(frame_options, text="Search", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.ClickSearch(client,str(click_list_day.get()),str(click_list_type.get())))
+        button_search = tk.Button(frame_options, text="Tra cứu", font=("Open Sans", 12, 'bold'), fg=WHITE, bg=PURPLE_3, command=lambda:self.ClickSearch(client,str(click_list_day.get()),str(click_list_type.get())))
         button_search.config(height=0, width=12)
-        button_search.place(x=520, y=26)
+        button_search.place(x=740, y=17)
 
         #button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
         #button_clear.config(height=0, width=12)
         #button_clear.place(x=670, y=26)
         list_day = RecieveList(client)
-        #list_day = [
-        #    "09/12/2021", 
-        #    "10/12/2021"
-        #]
 
         list_type = [
             "All",
@@ -280,26 +271,62 @@ class HomePage(tk.Frame):
         click_list_day = tk.StringVar()
         click_list_day.set(list_day[0])
         
-        canvas_name_option = tk.Canvas(frame_options, bg="#FFFFFF", height=20, width=340, highlightthickness=0)
+        canvas_name_option = tk.Canvas(frame_options, bg=PURPLE_1, height=20, width=400, highlightthickness=0)
         ##
-        canvas_name_option.create_text(112,10,text="Day",font=("Open Sans", 10, 'bold'),fill="#000000")
-        canvas_name_option.create_text(315,10,text="Type",font=("Open Sans", 10, 'bold'),fill="#000000")
+        canvas_name_option.create_text(155,10,text="Tháng/Ngày/Năm",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(337,10,text="Mã ngoại tệ",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
         ##
         canvas_name_option.place(x=0, y=6)
-
+        
+        drop_style = ttk.Style()
+        drop_style.configure('Dropbox',
+            background=PURPLE_3,
+            foreground=WHITE,    
+            fieldbackground = PURPLE_1,
+            font=('Open Sans', 10, 'bold')
+        )
+        
         dropBox_day = tk.OptionMenu(frame_options, click_list_day, *list_day)
-        dropBox_day.config(font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", width=15, highlightthickness=0)
+        dropBox_day.config(font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, width=15, highlightthickness=0)
         dropBox_day.place(x=100, y=27)
 
         click_list_type = tk.StringVar()
         click_list_type.set(list_type[0])
 
         dropBox_type = tk.OptionMenu(frame_options, click_list_type, *list_type)
-        dropBox_type.config(font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF", width=10, highlightthickness=0)
+        dropBox_type.config(font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, width=10, highlightthickness=0)
         dropBox_type.place(x=300, y=27)
 
         # frame show ----------------------------------------------------------
-        self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=13)
+        # add style 
+        style = ttk.Style()
+        
+        # pick a theme
+        style.theme_use('alt')
+        
+        #configure treeview color
+        style.configure("Treeview",
+            background=WHITE,
+            foreground=PURPLE_4,    
+            fieldbackground = PURPLE_1,
+            rowheight=25,
+            font=('Open Sans', 10, 'bold')
+        )
+        style.configure("Treeview.Heading",
+            background=PURPLE_1,
+            foreground=PURPLE_4,    
+            fieldbackground = PURPLE_2,
+            rowheight=25,
+            font=('Open Sans', 11, 'bold')
+        )
+        
+        # change selected color
+        style.map('Treeview',
+            background=[('selected', PURPLE_3)]
+        )
+        
+        # Create table
+        self.treeView_show = ttk.Treeview(frame_show, column=(1,2,3,4,5), show="headings", height=15)
         self.treeView_show.grid(row=0, column=0, sticky='nsew')
 
         self.treeView_show.column("# 1", anchor='w', width=200)
@@ -318,15 +345,6 @@ class HomePage(tk.Frame):
         scrollbar = ttk.Scrollbar(frame_show, orient=tk.VERTICAL, command=self.treeView_show.yview)
         self.treeView_show.configure(yscroll=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky='ns')
-
-        # Create Example data
-
-        
-        #contacts.append((f'Ten {n}', f'Ma {n}', f'1010{n}', f'1000{n}', f'1100{n}'))
-
-        # Add Example data to table
-        #for contact in self.contacts:
-   
     ###############################################################################
     def ClickSearch(self,client,ngay, ma):
         #xóa bảng
