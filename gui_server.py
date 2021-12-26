@@ -527,8 +527,6 @@ class HomePage(tk.Frame):
 
     def HandleClient(self,conn,address,sign):
         #print("Connected to ", address)
-        list = GetDate()
-        SendList(conn,list)
         print("send successfull")
         choice=conn.recv(1024).decode(FORMAT)
         print()
@@ -542,7 +540,8 @@ class HomePage(tk.Frame):
             id = list[1]
             if sign == "0":
                 self.print_show_client_login(address[0], address[1], id)
-        
+        list = GetDate()
+        SendList(conn,list)
         try:
             while(True):
                 date=conn.recv(1024).decode(FORMAT)                        

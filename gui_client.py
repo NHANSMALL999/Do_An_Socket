@@ -66,6 +66,7 @@ def notification(type, message):
 class VndEx_App(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.connect = False
 
         self.geometry("400x300")
         self.resizable(width=False, height=False)
@@ -75,15 +76,16 @@ class VndEx_App(tk.Tk):
         # Cai dat nut [X]
         self.protocol("WM_DELETE_WINDOW", self.click_X)
         
-        container = tk.Frame(self)
-        container.pack(side="top",fill='both',expand=True)
+        self.controller = tk.Frame(self)
+        self.controller.pack(side="top",fill='both',expand=True)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.controller.grid_rowconfigure(0, weight=1)
+        self.controller.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, SignUpPage, HomePage, ConnectPage):
-            frame = F(container, self)
+        
+        for F in (StartPage, SignUpPage, ConnectPage):
+            frame = F(self.controller, self)
 
             self.frames[F] = frame 
 
@@ -92,10 +94,14 @@ class VndEx_App(tk.Tk):
         self.showFrame(ConnectPage)
 
     def showFrame(self, container):
-        frame = self.frames[container]
+        frame = ""
         if container==HomePage:
+            frame = HomePage(self.controller, self)
+            self.frames[container]=frame
+            frame.grid(row=0, column=0, sticky="nsew")
             self.geometry("1000x600")
         else:
+            frame = self.frames[container]
             self.geometry("600x300")
         frame.tkraise()
         
@@ -232,7 +238,7 @@ class HomePage(tk.Frame):
         ##
         canvas_name_top.create_text(140,15,text="VndEx Client",font=("Open Sans", 25, 'bold'),fill=WHITE)
         ##
-        canvas_name_top.place(x=0, y=10)
+        canvas_name_top.place(x=0, y=10)    
 
         # frame options ----------------------------------------------------------
         button_search = tk.Button(frame_options, text="Tra cứu", font=("Open Sans", 12, 'bold'), fg=WHITE, bg=PURPLE_3, command=lambda:self.ClickSearch(client,str(click_list_day.get()),str(click_list_type.get())))
@@ -242,7 +248,9 @@ class HomePage(tk.Frame):
         #button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
         #button_clear.config(height=0, width=12)
         #button_clear.place(x=670, y=26)
-        list_day = RecieveList(client)
+        self.list_day = RecieveList(client)
+        #if controller.connect == True: 
+        #    list_day = RecieveList(client)
 
         list_type = [
             "All",
@@ -269,7 +277,7 @@ class HomePage(tk.Frame):
         ]
 
         click_list_day = tk.StringVar()
-        click_list_day.set(list_day[0])
+        click_list_day.set(self.list_day[0])
         
         canvas_name_option = tk.Canvas(frame_options, bg=PURPLE_1, height=20, width=400, highlightthickness=0)
         ##
@@ -286,9 +294,9 @@ class HomePage(tk.Frame):
             font=('Open Sans', 10, 'bold')
         )
         
-        dropBox_day = tk.OptionMenu(frame_options, click_list_day, *list_day)
-        dropBox_day.config(font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, width=15, highlightthickness=0)
-        dropBox_day.place(x=100, y=27)
+        self.dropBox_day = tk.OptionMenu(frame_options, click_list_day, *self.list_day)
+        self.dropBox_day.config(font=("Open Sans", 10, 'bold'), fg=WHITE, bg=PURPLE_3, width=15, highlightthickness=0)
+        self.dropBox_day.place(x=100, y=27)
 
         click_list_type = tk.StringVar()
         click_list_type.set(list_type[0])
@@ -445,7 +453,7 @@ class ConnectPage(tk.Frame):
 
         # Button
         button_connect = tk.Button(frame_right, text="Kết nối", fg=WHITE, bg=PURPLE_3, font=REGULAR_FONT, width=15)
-        button_connect.config(command=lambda:controller.showFrame(StartPage))
+        button_connect.config(command=lambda:self.click_connect(controller, self.entry_ip.get(), self.entry_port.get()))
         button_connect.place(x=x_show+55, y=200)
 
         # Checkbox
@@ -459,8 +467,8 @@ class ConnectPage(tk.Frame):
         if self.var_checkChoose.get() == 1:
             self.entry_ip.delete(0, tk.END)
             self.entry_port.delete(0, tk.END)
-            self.entry_ip.insert(0, "127.0.0.1")
-            self.entry_port.insert(0, "8000")
+            self.entry_ip.insert(0, SERVER)
+            self.entry_port.insert(0, PORT)
             self.entry_ip.config(state='disable')
             self.entry_port.config(state='disable')
         else:
@@ -469,8 +477,13 @@ class ConnectPage(tk.Frame):
             self.entry_ip.delete(0, tk.END)
             self.entry_port.delete(0, tk.END)
 
-    def click_connect(self):
-        pass
+    def click_connect(self, controller, ip, port):
+        try: 
+            client.connect((ip, int(port)))
+            controller.connect = True
+            controller.showFrame(StartPage)
+        except:
+            notification(ERROR, "Không tìm thấy server.")
 
 def click_login(controller, client, id, pw):
     try:
@@ -525,13 +538,8 @@ def click_finish_connection(controller, client):
     client.send("finish".encode(FORMAT))
     client.recv(1024)
     client.close()
-try:
-    client.connect((SERVER, PORT))
-    app = VndEx_App()
-    app.mainloop()
 
-            
-except: 
-    print("CAN NOT CONNECT TO SERVER") #Nếu server chưa mở => không kết nối được => báo lỗi 
-                                        #=> vẫn chạy dòng client.close => không bị treo
+app = VndEx_App()
+app.mainloop()
+
 client.close()
