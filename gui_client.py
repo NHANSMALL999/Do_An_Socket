@@ -144,10 +144,10 @@ class StartPage(tk.Frame):
         x_show = 95
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_user.place(x=x_show,y=73)
+        label_user.place(x=x_show,y=80)
 
         label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_pwd.place(x=x_show,y=125)
+        label_pwd.place(x=x_show,y=130)
 
         self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_user.place(x=x_show,y=100)
@@ -157,14 +157,14 @@ class StartPage(tk.Frame):
         
         button_log = tk.Button(frame_right,text="Đăng nhập",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pwd.get()))) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+65, y=190)
+        button_log.place(x=x_show+35, y=190)
 
         label_gosign = tk.Label(frame_right, text="Chưa có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_gosign.place(x=x_show-65,y=250)
+        label_gosign.place(x=x_show-60,y=250)
 
         button_gosign = tk.Button(frame_right,text="Đăng ký",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(SignUpPage)) 
         button_gosign.configure(width=10)
-        button_gosign.place(x=x_show+115, y=245)
+        button_gosign.place(x=x_show+80, y=245)
         #########################################################################
 
 
@@ -192,10 +192,10 @@ class SignUpPage(tk.Frame):
         label_title.place(x=x_show+40,y=40)
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_user.place(x=x_show,y=73)
+        label_user.place(x=x_show,y=80)
 
         label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_pwd.place(x=x_show,y=125)
+        label_pwd.place(x=x_show,y=130)
 
         self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_user.place(x=x_show,y=100)
@@ -208,11 +208,11 @@ class SignUpPage(tk.Frame):
         button_sign.place(x=x_show+35, y=190)
 
         label_golog = tk.Label(frame_right, text="Đã có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_golog.place(x=x_show-65,y=250)
+        label_golog.place(x=x_show-60,y=250)
 
         button_golog = tk.Button(frame_right,text="Đăng nhập",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(StartPage)) 
         button_golog.configure(width=10)
-        button_golog.place(x=x_show+115, y=245)
+        button_golog.place(x=x_show+70, y=245)
         #########################################################################
 
 
