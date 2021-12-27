@@ -115,7 +115,7 @@ def GetDate():
     "Trusted_Connection=yes;")
     cursor = conx.cursor()
     list = []
-    for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ?","USD"):
+    for row in cursor.execute("select ThoiGian from EXCHANGE_RATE_DATA where MaNT = ? order by ThoiGian DESC","USD"): #hoặc ASC
         list.append(row[0])
     conx.close()
     return list
@@ -130,6 +130,7 @@ def choose(choice,conn, sign):
         conn.send(username.encode(FORMAT))
         passw=conn.recv(1024).decode(FORMAT)
         conn.send(passw.encode(FORMAT))
+        conn.recv(1024)
         #Kiem tra thong tin va gui phan hoi cho client
         sign = AccountCheck(conn, username, passw, sign)
         list = [sign,username]
@@ -140,7 +141,7 @@ def choose(choice,conn, sign):
         conn.send(username.encode(FORMAT))
         passw=conn.recv(1024).decode(FORMAT)
         conn.send(passw.encode(FORMAT))
-       
+        conn.recv(1024)
         #Dang ky cho client
         sign = Signup(conn, username, passw,sign)
         list = [sign,username]
@@ -382,15 +383,15 @@ class StartPage(tk.Frame):
 
         # Frame right --------------------------------------------------------
         label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=120,y=55)
+        label_title.place(x=140,y=55)
 
         x_show = 90
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_user.place(x=x_show,y=95)
+        label_user.place(x=x_show,y=90)
 
         label_pwd = tk.Label(frame_right, text="Mật khẩu", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_pwd.place(x=x_show,y=145)
+        label_pwd.place(x=x_show,y=140)
 
         self.entry_user = tk.Entry(frame_right,width=25,bg='#EBEBF2', font=REGULAR_FONT)
         self.entry_user.place(x=x_show,y=115)
@@ -400,7 +401,7 @@ class StartPage(tk.Frame):
 
         button_log = tk.Button(frame_right,text="ĐĂNG NHẬP",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:self.click_log_in(controller)) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+35, y=205)
+        button_log.place(x=x_show+57, y=205)
         #########################################################################
     def click_log_in(self, controller):
         id = str(self.entry_user.get())
@@ -442,7 +443,7 @@ class HomePage(tk.Frame):
         #button_logOut.place(x=770, y=15)
         canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
         ##
-        canvas_name_top.create_text(110,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
+        canvas_name_top.create_text(140,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
         ##
         canvas_name_top.place(x=0, y=10)
 
@@ -507,7 +508,7 @@ class HomePage(tk.Frame):
             self.print_show_server_start()
             #server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             #self.run_server()
-
+            #server.bind((SERVER, PORT))
             server.listen()
             print("Server is waiting...")
             print()
@@ -528,13 +529,14 @@ class HomePage(tk.Frame):
     def HandleClient(self,conn,address,sign):
         #print("Connected to ", address)
         print("send successfull")
-        choice=conn.recv(1024).decode(FORMAT)
+        
         print()
         while(sign != "0"):
             if(self.run == False):
                 print("Connect is closed")
                 conn.close()
                 return
+            choice=conn.recv(1024).decode(FORMAT)
             list = choose(choice, conn,sign)
             sign = list[0]
             id = list[1]

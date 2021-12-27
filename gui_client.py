@@ -392,11 +392,6 @@ class HomePage(tk.Frame):
 
                
         return new_list    
-    def click_clear(self):
-        pass
-
-    def click_search(self):
-        pass
 
     def click_log_out(self, controller):
         try:
@@ -434,13 +429,13 @@ class ConnectPage(tk.Frame):
         x_show = 55
 
         label_title = tk.Label(frame_right, text="KẾT NỐI VỚI SERVER", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=x_show+10,y=40)
+        label_title.place(x=x_show,y=40)
 
         label_ip = tk.Label(frame_right, text="Địa chỉ IP", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_ip.place(x=x_show-2,y=90)
+        label_ip.place(x=x_show-2,y=85)
 
         label_port = tk.Label(frame_right, text="Port", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_port.place(x=x_show+170,y=90)
+        label_port.place(x=x_show+170,y=85)
 
         # Entry
         self.entry_ip = tk.Entry(frame_right, width=15)
@@ -454,7 +449,7 @@ class ConnectPage(tk.Frame):
         # Button
         button_connect = tk.Button(frame_right, text="Kết nối", fg=WHITE, bg=PURPLE_3, font=REGULAR_FONT, width=15)
         button_connect.config(command=lambda:self.click_connect(controller, self.entry_ip.get(), self.entry_port.get()))
-        button_connect.place(x=x_show+55, y=200)
+        button_connect.place(x=x_show+50, y=200)
 
         # Checkbox
         self.var_checkChoose = tk.IntVar()
@@ -496,7 +491,8 @@ def click_login(controller, client, id, pw):
         #Gui password
         client.send(pw.encode(FORMAT))
         client.recv(1024)
-    
+        
+        client.send("".encode(FORMAT))
         check = int(client.recv(1024).decode(FORMAT))
         if check==0:
             controller.showFrame(HomePage)
@@ -507,7 +503,7 @@ def click_login(controller, client, id, pw):
         else:
             notification(ERROR, "Connection was corrupted!!!")
     except:
-        notification(ERROR, "Serser closed!!!")
+        notification(ERROR, "Server closed!!!")
            
 def click_signup(controller, client, id, pw):
     try:
@@ -521,6 +517,7 @@ def click_signup(controller, client, id, pw):
         client.send(pw.encode(FORMAT))
         client.recv(1024)
 
+        client.send("".encode(FORMAT))
         check=int(client.recv(1024).decode(FORMAT))
         if check==0:
             controller.showFrame(HomePage)
