@@ -295,7 +295,7 @@ import time
 
 HEADER_FONT = ("Open Sans", 16,"bold")
 BUTTON_FONT = ("Open Sans", 12, "bold")
-REGULAR_FONT= ("Open Sans", 12)
+REGULAR_FONT= ("Open Sans", 10, "bold")
 ENTRY_FONT= ("Open Sans", 10, "bold")
 
 #option
@@ -382,10 +382,10 @@ class StartPage(tk.Frame):
         canvas.pack()
 
         # Frame right --------------------------------------------------------
-        label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=140,y=55)
-
         x_show = 90
+        
+        label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
+        label_title.place(x=x_show+35,y=55)
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_user.place(x=x_show,y=90)
@@ -401,7 +401,7 @@ class StartPage(tk.Frame):
 
         button_log = tk.Button(frame_right,text="ĐĂNG NHẬP",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:self.click_log_in(controller)) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+57, y=205)
+        button_log.place(x=x_show+37, y=205)
         #########################################################################
     def click_log_in(self, controller):
         id = str(self.entry_user.get())
@@ -430,20 +430,20 @@ class HomePage(tk.Frame):
 
         # Main frame
         frame_top = tk.Frame(self, bg=PURPLE_2, height=50, width=880)
-        frame_top.grid(row=0, column=0, padx=5, pady=10, sticky='w')
+        frame_top.grid(row=0, column=0, padx=10, pady=10, sticky='w')
 
         frame_options = tk.LabelFrame(self, text = "Tùy chọn", font=("Open Sans", 12, 'bold'), bg=PURPLE_1, fg=PURPLE_4, bd=3, height=100, width=880)
-        frame_options.grid(row=1, column=0, padx=0, pady=5, sticky='w')
+        frame_options.grid(row=1, column=0, padx=10, pady=5, sticky='w')
 
-        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=800, bd=3)
-        frame_show.grid(row=2, column=0, padx=0, ipady=5, sticky='w')
+        frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=880, bd=3)
+        frame_show.grid(row=2, column=0, padx=10, ipady=5, sticky='w')
         
         # Frame top --------------------------------------
         #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
         #button_logOut.place(x=770, y=15)
         canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
         ##
-        canvas_name_top.create_text(140,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
+        canvas_name_top.create_text(110,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
         ##
         canvas_name_top.place(x=0, y=10)
 
