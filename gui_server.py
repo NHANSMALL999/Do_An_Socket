@@ -11,8 +11,7 @@ SERVER=socket.gethostbyname(socket.gethostname())
 FORMAT="utf_16"
 
 LOGIN="logIn"
-SIGNUP="signUp"
-table = "EXCHANGE_RATE_9_12_21"   
+SIGNUP="signUp" 
 
 #################### LẤY DỮ LIỆU TỪ WEBSITE ####################
 
@@ -41,7 +40,6 @@ def UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaT
 
 #Hàm lấy dữ liệu từ web và insert/update vào sql
 def CrawlDataFromWeb():
-    print("Runing...")
     url = "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx"
     try:
         response = requests.get(url)
@@ -52,7 +50,6 @@ def CrawlDataFromWeb():
     #Hiển thị dưới dạng xml
     soup = BeautifulSoup(response.text, features="lxml")
 
-
     list_ThoiGian = []
     list_TenNT = []
     list_MaNT = []
@@ -61,7 +58,6 @@ def CrawlDataFromWeb():
     list_Ban = []
 
     ### Crawl thời gian ###
-    
     tag = soup.find("datetime")
     list_ThoiGian.append(tag.next)
     list_ThoiGian = [w[:10] for w in list_ThoiGian] #Tách string trong list từ ['12/23/2021 1:21:55 PM'] thành ['12/23/2021']
@@ -98,14 +94,13 @@ def CrawlDataFromWeb():
         UpDateCurrencyInSQL(conx,cursor,list_ThoiGian,list_TenNT,list_MaNT,list_MuaTienMat,list_MuaChuyenKhoan, list_Ban)
     conx.close()
 ###################################################
+
 #Hàm thời gian
 def Repeat():
     while(True):
         CrawlDataFromWeb()
-        time.sleep(1800)
-        
+        time.sleep(1800) 
     
-
 # Hàm lấy ngày từ sql
 def GetDate():
     conx = pyodbc.connect(
@@ -147,7 +142,6 @@ def choose(choice,conn, sign):
         list = [sign,username]
         return list
     else:
-       print("enddddddddd")
        return ["",""]
         
 
@@ -163,8 +157,7 @@ def AccountCheck(conn, user, pw, sign):
     for row in cursor.execute("select PASSWORD from INFORMATION where ID = ?", user):
         #row trả về hàng chứa id. vd: ('nhan','123456')
         password = row[0] 
-        temp = "checked"
-    #conx.close() 
+        temp = "checked" 
     if(temp != "checked"):
         ans = "ID does not exist."
         conn.send("1".encode(FORMAT))
@@ -176,8 +169,6 @@ def AccountCheck(conn, user, pw, sign):
         else:
             ans = "Wrong password."
             conn.send("2".encode(FORMAT))
-            
-    print(ans)
     conx.close()
     return sign
 
@@ -207,15 +198,8 @@ def Signup(conn, username, passw, sign):
         conn.send("0".encode(FORMAT))
         Insert_ID_PW(conx, username, passw)
 
-    print(ans)
     conx.close()
     return sign
-
-#Gửi danh sách sang client
-#def SendList(conn, list):
-#    for data in list:
-#        conn.send(data.encode(FORMAT))
-#        conn.recv(1024)
 
 def SendList(conn, list):
     for data in list:
@@ -240,7 +224,7 @@ def GetAllData(conn, ThoiGian):
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
-    print(list)
+
     SendList(conn, list)
     conx.close()
 
@@ -253,37 +237,23 @@ def GetSpeData(conn, ThoiGian, MaNT):
     "Trusted_Connection=yes;")
     cursor = conx.cursor()
     for row in cursor.execute("select TenNgoaiTe, MaNT, MuaTienMat, MuaChuyenKhoan, Ban from EXCHANGE_RATE_DATA where ThoiGian = ? AND MaNT = ?",ThoiGian, MaNT):
-        #print(row)
         list = []
         list.append(row[0])
         list.append(row[1])
         list.append(row[2])
         list.append(row[3])
         list.append(row[4])
-        #print(list)
-        SendList(conn, list)  
+    SendList(conn, list)  
     conx.close()
 
 def request(conn,date):
     conn.send(date.encode(FORMAT))
     mnt=conn.recv(1024).decode(FORMAT)
-    print(mnt)
     if(mnt=="All"):
         GetAllData(conn, date)
     else:
         GetSpeData(conn, date, mnt)
-ab = """
-def HandleClient(conn,address,sign):
-    #print("Connected to ", address)
-    print()
-    while(sign != "0"):
-        sign = choice(conn,sign)
-    while(True):
-        request(conn)
-    
-    print("Connection with ", address, " ended")
-    #conn.close()
-"""
+
 ################# HÀM GUI #######################
 import tkinter as tk
 from tkinter import messagebox
@@ -358,9 +328,6 @@ class VndEx_App(tk.Tk):
     # Ham chuc nang nut [X]
     def click_X(self):
         if messagebox.askyesno("Exit", "Do you want to quit the app?"):
-            # Them cac chuc nang khac trong nay
-
-            ###################################
             self.destroy()
 
 
@@ -378,11 +345,11 @@ class StartPage(tk.Frame):
 
         # Frame left --------------------------------------------------------
         canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
-        canvas.create_text(113,150, text="SERVER", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.create_text(113,150, text="SERVER", font=("Open Sans", 30, "bold"), fill="#EBEBF2")
         canvas.pack()
 
         # Frame right --------------------------------------------------------
-        x_show = 90
+        x_show = 70
         
         label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_title.place(x=x_show+35,y=55)
@@ -401,7 +368,7 @@ class StartPage(tk.Frame):
 
         button_log = tk.Button(frame_right,text="ĐĂNG NHẬP",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:self.click_log_in(controller)) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+37, y=205)
+        button_log.place(x=x_show+50, y=205)
         #########################################################################
     def click_log_in(self, controller):
         id = str(self.entry_user.get())
@@ -436,14 +403,12 @@ class HomePage(tk.Frame):
         frame_options.grid(row=1, column=0, padx=10, pady=5, sticky='w')
 
         frame_show = tk.LabelFrame(self, bg="#FFFFFF", height=300, width=880, bd=3)
-        frame_show.grid(row=2, column=0, padx=10, ipady=5, sticky='w')
+        frame_show.grid(row=2, column=0, padx=12, ipady=5, sticky='w')
         
-        # Frame top --------------------------------------
-        #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF")
-        #button_logOut.place(x=770, y=15)
+        # Frame top ------------------------------------------
         canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
         ##
-        canvas_name_top.create_text(110,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
+        canvas_name_top.create_text(138,15,text="VndEx Server",font=("Open Sans", 25, 'bold'),fill=WHITE)
         ##
         canvas_name_top.place(x=0, y=10)
 
@@ -458,8 +423,8 @@ class HomePage(tk.Frame):
 
         canvas_name_option = tk.Canvas(frame_options, bg=PURPLE_1, height=20, width=340, highlightthickness=0)
         ##
-        canvas_name_option.create_text(131,12,text="Địa chỉ IP",font=("Arial", 10, 'bold'),fill=PURPLE_4)
-        canvas_name_option.create_text(284,12,text="Port",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(137,12,text="Địa chỉ IP",font=("Arial", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(288,12,text="Port",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
         ##
         canvas_name_option.place(x=0, y=10)
 
@@ -471,7 +436,7 @@ class HomePage(tk.Frame):
 
         # Frame show --------------------------------------
         self.text_show = scrolledtext.ScrolledText(frame_show, bd=0)
-        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=122, height=21)
+        self.text_show.configure(state='disable', font=("Arial", 10, 'bold'), width=94, height=18)
         self.text_show.pack(side='left')
         
         # Default run -------------------------------------
@@ -497,8 +462,6 @@ class HomePage(tk.Frame):
             self.clear_text_show()
             self.print_show_server_close()
             
-            #self.close_server()
-            
     def click_run(self, controller):
         if self.run == False:
             self.run = True
@@ -506,35 +469,21 @@ class HomePage(tk.Frame):
             self.button_run.config(state='disable')
             self.clear_text_show()
             self.print_show_server_start()
-            #server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #self.run_server()
+
             server.bind((SERVER, PORT))
             server.listen()
-            print("Server is waiting...")
-            print()
 
             try:
                 ServerThread=threading.Thread(target=self.HandleServer, args=())
                 ServerThread.daemon = True
                 ServerThread.start()
             except:
-                print("Client is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
+                print("Client is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo
 
-                        
-            #input()
-            #print("client is connected")
-            #self.print_show_client_login("Client is connected")
-            #self.print_show_client_logout(address[0], address[1], "tuan123")
-
-    def HandleClient(self,conn,address,sign):
-        #print("Connected to ", address)
-        print("send successfull")
-        
-        print()
+    def HandleClient(self,conn,address,sign):        
         while(sign != "0"):
             choice=conn.recv(1024).decode(FORMAT)
             if(self.run == False):
-                print("Connect is closed")
                 conn.close()
                 return
             list = choose(choice, conn,sign)
@@ -555,47 +504,26 @@ class HomePage(tk.Frame):
         except:
             self.print_show_client_logout(address[0],address[1],id)
 
-        print("Connection with ", address, " ended")
-        #conn.close()
-
     def HandleServer(self):
         nClient = 0
         sign = ""
         while(True):
             try:
                 conn, address = server.accept()
-                print("Accepted")
                 if (self.run == True):
-                    print("nhay vao if")
                     conn.send("1".encode(FORMAT))
-                    print("Sent 1")
                     conn.recv(1024).decode(FORMAT)
                     clientThread=threading.Thread(target=self.HandleClient, args=(conn, address, sign))
                     clientThread.daemon = True
                     clientThread.start()
-                    print("Connected to ", address)
-
                 else:
-                    print("nhay vao else")
                     conn.send("0".encode(FORMAT))
-                    print("Sent 0")
                     conn.recv(1024).decode(FORMAT)
                     conn.close()
             
             except:
-                print("Client ",address, "is disconnectedddddddddd.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
+                print("Client ",address, "is disconnected.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
             
-    def close_server(self,conn): 
-        pass
-
-    def run_server(self):
-        server.bind((SERVER, PORT))
-        server.listen()
-        print("Server is waiting...")
-
-    def log_out(self):
-        pass
-
     def delay(self, controller, second):
         controller.after(int(second*1000))
 
@@ -633,13 +561,10 @@ class HomePage(tk.Frame):
 
 ############################################# HÀM MAIN ##################################################
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
-#server.bind((SERVER, PORT))
-
 
 DataThread=threading.Thread(target= Repeat, args=())
 DataThread.daemon = True
 DataThread.start()
-
 
 app = VndEx_App()
 app.mainloop()

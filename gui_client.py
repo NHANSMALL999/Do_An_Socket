@@ -4,9 +4,7 @@ import threading
 SERVER=socket.gethostbyname(socket.gethostname())
 PORT = 8000
 FORMAT = "utf_16"
-client=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
         
-
 #Hàm cho GUI
 import tkinter as tk
 from tkinter import messagebox
@@ -31,17 +29,6 @@ WARNING = 0
 INFO = 1
 
 #Hàm nhận danh sách
-a = """
-def RecieveList(client, list):
-    data=""
-    for i in range(5):
-        data= client.recv(1024).decode(FORMAT)
-        list.append(data)
-        client.send(data.encode(FORMAT))
-    return list
-"""
-
-#Hàm nhận danh sách
 def RecieveList(client):
     list = []
     data = ""
@@ -50,7 +37,6 @@ def RecieveList(client):
         list.append(data)
         client.send(data.encode(FORMAT))
         data= client.recv(1024).decode(FORMAT)
-    #print(list)
     return list
 
 
@@ -134,14 +120,14 @@ class StartPage(tk.Frame):
 
         # Frame left --------------------------------------------------------
         canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
-        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 30, "bold"), fill="#EBEBF2")
         canvas.pack()
 
         # Frame right --------------------------------------------------------
         label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=120,y=40)
+        label_title.place(x=115,y=35)
 
-        x_show = 90
+        x_show = 80
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_user.place(x=x_show,y=73)
@@ -157,14 +143,14 @@ class StartPage(tk.Frame):
         
         button_log = tk.Button(frame_right,text="Đăng nhập",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pwd.get()))) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+35, y=190)
+        button_log.place(x=x_show+48, y=190)
 
         label_gosign = tk.Label(frame_right, text="Chưa có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_gosign.place(x=x_show-65,y=250)
+        label_gosign.place(x=x_show-30,y=250)
 
         button_gosign = tk.Button(frame_right,text="Đăng ký",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(SignUpPage)) 
         button_gosign.configure(width=10)
-        button_gosign.place(x=x_show+70, y=245)
+        button_gosign.place(x=x_show+130, y=245)
         #########################################################################
 
 
@@ -182,14 +168,14 @@ class SignUpPage(tk.Frame):
 
         # Frame left --------------------------------------------------------
         canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
-        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 30, "bold"), fill="#EBEBF2")
         canvas.pack()
 
         # Frame right --------------------------------------------------------
-        x_show = 90
+        x_show = 80
 
         label_title = tk.Label(frame_right, text="ĐĂNG KÝ", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=x_show+40,y=40)
+        label_title.place(x=x_show+50,y=35)
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_user.place(x=x_show,y=73)
@@ -205,14 +191,14 @@ class SignUpPage(tk.Frame):
 
         button_sign = tk.Button(frame_right,text="Đăng ký",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_signup(controller, client, str(self.entry_user.get()), str(self.entry_pwd.get()))) 
         button_sign.configure(width=10)
-        button_sign.place(x=x_show+35, y=190)
+        button_sign.place(x=x_show+ 48, y=190)
 
         label_golog = tk.Label(frame_right, text="Đã có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_golog.place(x=x_show-65,y=250)
+        label_golog.place(x=x_show-30,y=250)
 
         button_golog = tk.Button(frame_right,text="Đăng nhập",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(StartPage)) 
         button_golog.configure(width=10)
-        button_golog.place(x=x_show+70, y=245)
+        button_golog.place(x=x_show+110, y=245)
         #########################################################################
 
 
@@ -233,8 +219,6 @@ class HomePage(tk.Frame):
         frame_show.grid(row=2, column=0, padx=5, pady=5)
 
         # frame top ----------------------------------------------------------
-        #button_logOut = tk.Button(frame_top, text="Log out", font=("Open Sans", 12, 'bold'), fg="#000000", bg="#FFFFFF", command=lambda:self.click_log_out(controller))
-        #button_logOut.place(x=870, y=15)
         canvas_name_top = tk.Canvas(frame_top, bg=PURPLE_2, height=30, width=400, highlightthickness=0)
         ##
         canvas_name_top.create_text(140,15,text="VndEx Client",font=("Open Sans", 25, 'bold'),fill=WHITE)
@@ -246,13 +230,7 @@ class HomePage(tk.Frame):
         button_search.config(height=0, width=12)
         button_search.place(x=740, y=17)
 
-        #button_clear = tk.Button(frame_options, text="Clear", font=("Open Sans", 10, 'bold'), fg="#000000", bg="#FFFFFF")
-        #button_clear.config(height=0, width=12)
-        #button_clear.place(x=670, y=26)
         self.list_day = RecieveList(client)
-        #if controller.connect == True: 
-        #    list_day = RecieveList(client)
-
         list_type = [
             "All",
             "AUD",
@@ -282,8 +260,8 @@ class HomePage(tk.Frame):
         
         canvas_name_option = tk.Canvas(frame_options, bg=PURPLE_1, height=20, width=400, highlightthickness=0)
         ##
-        canvas_name_option.create_text(155,10,text="Tháng/Ngày/Năm",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
-        canvas_name_option.create_text(337,10,text="Mã ngoại tệ",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(165,10,text="Tháng/Ngày/Năm",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
+        canvas_name_option.create_text(349,10,text="Mã ngoại tệ",font=("Open Sans", 10, 'bold'),fill=PURPLE_4)
         ##
         canvas_name_option.place(x=0, y=6)
         
@@ -367,9 +345,7 @@ class HomePage(tk.Frame):
             list = []
             list = RecieveList(client)
             list = self.Convert(list)
-            #if (list == []):
 
-            print(list)
             for data in list:
                 self.treeView_show.insert('', tk.END, values=data)
         except:
@@ -389,24 +365,9 @@ class HomePage(tk.Frame):
                 i = 1
                 temp_list = []
                 temp_list.append(data)
-        new_list.append(temp_list)
-
-               
+        new_list.append(temp_list)           
         return new_list    
-
-    def click_log_out(self, controller):
-        try:
-            client.send("0".encode(FORMAT))
-            client.recv(1024)
-            client.close()
-            ###################################
-            client.connect((SERVER, PORT))
-            controller.showFrame(StartPage)
-
-        except:
-            client.close()
-            self.destroy()
-        
+ 
         
 ###################
 class ConnectPage(tk.Frame):
@@ -423,41 +384,41 @@ class ConnectPage(tk.Frame):
 
         # Frame left --------------------------------------------------------
         canvas = tk.Canvas(frame_left, width=230, height=295, bg=PURPLE_2, bd=0)
-        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 36, "bold"), fill="#EBEBF2")
+        canvas.create_text(113,150, text="CLIENT", font=("Open Sans", 30, "bold"), fill="#EBEBF2")
         canvas.pack()
 
         # Frame right
-        x_show = 55
+        x_show = 45
 
         label_title = tk.Label(frame_right, text="KẾT NỐI VỚI SERVER", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_title.place(x=x_show,y=40)
+        label_title.place(x=x_show,y=45)
 
         label_ip = tk.Label(frame_right, text="Địa chỉ IP", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_ip.place(x=x_show-2,y=85)
+        label_ip.place(x=x_show+20,y=100)
 
         label_port = tk.Label(frame_right, text="Port", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
-        label_port.place(x=x_show+170,y=85)
+        label_port.place(x=x_show+190,y=100)
 
         # Entry
         self.entry_ip = tk.Entry(frame_right, width=15)
-        self.entry_ip.config(font=BUTTON_FONT)
-        self.entry_ip.place(x=x_show, y=110)
+        self.entry_ip.config(font=REGULAR_FONT)
+        self.entry_ip.place(x=x_show + 20, y=120)
 
         self.entry_port = tk.Entry(frame_right, width=8)
-        self.entry_port.config(font=BUTTON_FONT)
-        self.entry_port.place(x=x_show+170, y=110)
+        self.entry_port.config(font=REGULAR_FONT)
+        self.entry_port.place(x=x_show+190, y=120)
 
         # Button
         button_connect = tk.Button(frame_right, text="Kết nối", fg=WHITE, bg=PURPLE_3, font=REGULAR_FONT, width=15)
         button_connect.config(command=lambda:self.click_connect(controller, self.entry_ip.get(), self.entry_port.get()))
-        button_connect.place(x=x_show+50, y=200)
+        button_connect.place(x=x_show+70, y=200)
 
         # Checkbox
         self.var_checkChoose = tk.IntVar()
 
         checkBox_default = tk.Checkbutton(frame_right, text="Đặt mặc định", font=REGULAR_FONT, bg=PURPLE_1, fg=PURPLE_4)
         checkBox_default.config(command=self.click_default, variable=self.var_checkChoose)
-        checkBox_default.place(x=x_show, y=145)
+        checkBox_default.place(x=x_show+20, y=150)
     
     def click_default(self):
         if self.var_checkChoose.get() == 1:
@@ -477,12 +438,8 @@ class ConnectPage(tk.Frame):
         try: 
             client.connect((ip, int(port)))
             controller.connect = True
-            print("truoc")
             temp = int(client.recv(1024).decode(FORMAT))
-            print("sau")
-            print(temp)
             client.send("1".encode(FORMAT))
-            print("sent")
             if(temp == 1):
                 controller.showFrame(StartPage)
             elif (temp == 0):
@@ -539,13 +496,8 @@ def click_signup(controller, client, id, pw):
     except: 
         notification(ERROR, "Connection was corrupted!!!")
 
-
-
-def click_finish_connection(controller, client):
-    client.send("finish".encode(FORMAT))
-    client.recv(1024)
-    client.close()
-
+############################################# HÀM MAIN ##################################################
+client=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
 app = VndEx_App()
 app.mainloop()
 
