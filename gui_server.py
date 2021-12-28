@@ -508,7 +508,7 @@ class HomePage(tk.Frame):
             self.print_show_server_start()
             #server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             #self.run_server()
-            #server.bind((SERVER, PORT))
+            server.bind((SERVER, PORT))
             server.listen()
             print("Server is waiting...")
             print()
@@ -532,11 +532,11 @@ class HomePage(tk.Frame):
         
         print()
         while(sign != "0"):
+            choice=conn.recv(1024).decode(FORMAT)
             if(self.run == False):
                 print("Connect is closed")
                 conn.close()
                 return
-            choice=conn.recv(1024).decode(FORMAT)
             list = choose(choice, conn,sign)
             sign = list[0]
             id = list[1]
@@ -564,11 +564,24 @@ class HomePage(tk.Frame):
         while(True):
             try:
                 conn, address = server.accept()
-                print("Connected to ", address)
-                clientThread=threading.Thread(target=self.HandleClient, args=(conn, address, sign))
-                clientThread.daemon = True
-                clientThread.start()
-                                   
+                print("Accepted")
+                if (self.run == True):
+                    print("nhay vao if")
+                    conn.send("1".encode(FORMAT))
+                    print("Sent 1")
+                    conn.recv(1024).decode(FORMAT)
+                    clientThread=threading.Thread(target=self.HandleClient, args=(conn, address, sign))
+                    clientThread.daemon = True
+                    clientThread.start()
+                    print("Connected to ", address)
+
+                else:
+                    print("nhay vao else")
+                    conn.send("0".encode(FORMAT))
+                    print("Sent 0")
+                    conn.recv(1024).decode(FORMAT)
+                    conn.close()
+            
             except:
                 print("Client ",address, "is disconnectedddddddddd.") #Nếu client thoát đột ngột => chạy dòng này => server không bị treo.
             
@@ -593,7 +606,7 @@ class HomePage(tk.Frame):
 
     def print_show_server_start(self):
         self.text_show.configure(state='normal')
-        self.text_show.insert('insert', f"[Server][Opened]     IP:{self.entry_ip.get()} - Port:{self.entry_port.get()}\n\n")
+        self.text_show.insert('insert', f"[Server][Opened]     IP:{self.entry_ip.get()} - Port:{self.entry_port.get()}\n")
         self.text_show.configure(state='disable')
 
     def print_show_server_close(self):
@@ -603,12 +616,12 @@ class HomePage(tk.Frame):
 
     def print_show_client_login(self, ip, port, username):
         self.text_show.configure(state='normal')
-        self.text_show.insert('insert', f"[Client][Logged in]   IP:{ip} - Port:{port} - User:{username}\n")
+        self.text_show.insert('insert', f"\n[Client][Logged in]   IP:{ip} - Port:{port} - User:{username}")
         self.text_show.configure(state='disable')
 
     def print_show_client_logout(self, ip, port, username):
         self.text_show.configure(state='normal')
-        self.text_show.insert('insert', f"[Client][Logged out] IP:{ip} - Port:{port} - User:{username}\n")
+        self.text_show.insert('insert', f"\n[Client][Logged out] IP:{ip} - Port:{port} - User:{username}")
         self.text_show.configure(state='disable')
 
     def print_default_IP_Port(self):
@@ -620,7 +633,7 @@ class HomePage(tk.Frame):
 
 ############################################# HÀM MAIN ##################################################
 server=socket.socket(socket.AF_INET, socket.SOCK_STREAM) #SOCK_STREAM: giao thức TCP
-server.bind((SERVER, PORT))
+#server.bind((SERVER, PORT))
 
 
 DataThread=threading.Thread(target= Repeat, args=())

@@ -476,7 +476,16 @@ class ConnectPage(tk.Frame):
         try: 
             client.connect((ip, int(port)))
             controller.connect = True
-            controller.showFrame(StartPage)
+            print("truoc")
+            temp = int(client.recv(1024).decode(FORMAT))
+            print("sau")
+            print(temp)
+            client.send("1".encode(FORMAT))
+            print("sent")
+            if(temp == 1):
+                controller.showFrame(StartPage)
+            elif (temp == 0):
+                notification(ERROR, "Server da dong.")
         except:
             notification(ERROR, "Không tìm thấy server.")
 
