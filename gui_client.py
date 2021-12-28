@@ -15,7 +15,8 @@ from tkinter import ttk
 
 HEADER_FONT = ("Open Sans", 16,"bold")
 BUTTON_FONT = ("Open Sans", 12, "bold")
-REGULAR_FONT= ("Open Sans", 12)
+REGULAR_FONT= ("Open Sans", 10, "bold")
+ENTRY_FONT= ("Open Sans", 10, "bold")
 
 # colors
 WHITE    = '#F2F2F2'
@@ -140,7 +141,7 @@ class StartPage(tk.Frame):
         label_title = tk.Label(frame_right, text="ĐĂNG NHẬP", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_title.place(x=120,y=40)
 
-        x_show = 95
+        x_show = 90
 
         label_user = tk.Label(frame_right, text="Tên đăng nhập", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_user.place(x=x_show,y=73)
@@ -156,14 +157,14 @@ class StartPage(tk.Frame):
         
         button_log = tk.Button(frame_right,text="Đăng nhập",font=BUTTON_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:click_login(controller, client, str(self.entry_user.get()), str(self.entry_pwd.get()))) 
         button_log.configure(width=10)
-        button_log.place(x=x_show+65, y=190)
+        button_log.place(x=x_show+35, y=190)
 
         label_gosign = tk.Label(frame_right, text="Chưa có tài khoản?", font=REGULAR_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_gosign.place(x=x_show-65,y=250)
 
         button_gosign = tk.Button(frame_right,text="Đăng ký",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(SignUpPage)) 
         button_gosign.configure(width=10)
-        button_gosign.place(x=x_show+115, y=245)
+        button_gosign.place(x=x_show+70, y=245)
         #########################################################################
 
 
@@ -185,7 +186,7 @@ class SignUpPage(tk.Frame):
         canvas.pack()
 
         # Frame right --------------------------------------------------------
-        x_show = 95
+        x_show = 90
 
         label_title = tk.Label(frame_right, text="ĐĂNG KÝ", font=HEADER_FONT, fg=PURPLE_4, bg=PURPLE_1)
         label_title.place(x=x_show+40,y=40)
@@ -211,7 +212,7 @@ class SignUpPage(tk.Frame):
 
         button_golog = tk.Button(frame_right,text="Đăng nhập",font=REGULAR_FONT, bg=PURPLE_3, fg=WHITE, command=lambda:controller.showFrame(StartPage)) 
         button_golog.configure(width=10)
-        button_golog.place(x=x_show+115, y=245)
+        button_golog.place(x=x_show+70, y=245)
         #########################################################################
 
 
